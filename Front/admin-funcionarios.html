@@ -80,6 +80,7 @@ tr.off{opacity:.55}
     <form id="f" novalidate>
       <div class="field"><label for="nome">Nome completo</label><input id="nome" placeholder="Ex: Maria Silva" autocomplete="off"></div>
       <div class="field"><label for="mat">Matrícula</label><div class="mat"><input id="mat" placeholder="Ex: 123456" autocomplete="off"><button type="button" class="btn" id="gen">Gerar</button></div></div>
+      <div class="field"><label for="senha" id="lsenha">Senha</label><div class="mat"><input id="senha" type="password" placeholder="Mínimo 4 caracteres" autocomplete="new-password"><button type="button" class="btn" id="vsenha">Mostrar</button></div></div>
       <div class="row">
         <div class="field"><label for="area">Área de atuação</label><select id="area"></select></div>
         <div class="field"><label for="cargo">Cargo</label><select id="cargo"></select></div>
@@ -140,10 +141,11 @@ $("#setores").addEventListener("change",e=>{e.target.checked?sel.add(e.target.va
 $("#nome").addEventListener("input",updPreview);
 $("#area").onchange=()=>{sel.clear();fillCargos();renderSetores()};
 $("#cargo").onchange=renderSetores;
+$("#vsenha").onclick=()=>{const i=$("#senha"),h=i.type==="password";i.type=h?"text":"password";$("#vsenha").textContent=h?"Ocultar":"Mostrar"};
 $("#gen").onclick=()=>{let m;do{m=String(Math.floor(100000+Math.random()*900000))}while(staff.some(s=>s.mat===m));$("#mat").value=m;$("#mat").classList.remove("bad")};
 
 function resetForm(){
-  editing=null;sel.clear();$("#f").reset();$("#mat").disabled=false;$("#area").value="enfermagem";fillCargos();renderSetores();
+  editing=null;sel.clear();$("#f").reset();$("#mat").disabled=false;$("#senha").type="password";$("#vsenha").textContent="Mostrar";$("#lsenha").textContent="Senha";$("#senha").placeholder="Mínimo 4 caracteres";$("#area").value="enfermagem";fillCargos();renderSetores();
   $("#ftitle").textContent="Novo Funcionário";$("#save").textContent="Cadastrar Funcionário";$("#cancel").hidden=true;
   document.querySelectorAll(".bad").forEach(x=>x.classList.remove("bad"));
 }
@@ -157,13 +159,15 @@ $("#f").addEventListener("submit",e=>{
   if(!okN)return toast("Informe nome e sobrenome.",true);
   if(!okM)return toast("Matrícula: 3 a 15 letras, números ou hífen.",true);
   if(dup)return toast("Já existe um funcionário com essa matrícula.",true);
+  const senha=$("#senha").value,okS=editing?(!senha||senha.length>=4):senha.length>=4;
+  $("#senha").classList.toggle("bad",!okS);
+  if(!okS)return toast(editing?"A nova senha deve ter ao menos 4 caracteres (ou deixe em branco).":"Defina uma senha com ao menos 4 caracteres.",true);
   if(!sel.size)return toast("Selecione ao menos um setor de atuação.",true);
   const d={nome,mat,area:$("#area").value,cargo:$("#cargo").value,setores:[...sel]};
-  if(editing){Object.assign(staff.find(s=>s.mat===editing),d);toast("Cadastro atualizado.");$("#cred").classList.remove("show")}
+  if(editing){const u=staff.find(s=>s.mat===editing);Object.assign(u,d);if(senha)u.senha=senha;toast(senha?"Cadastro e senha atualizados.":"Cadastro atualizado.");$("#cred").classList.remove("show")}
   else{
-    const pw=String(Math.floor(100000+Math.random()*900000));
-    staff.push({...d,ativo:true,senha:pw});
-    $("#cred").innerHTML=`<b>${esc(nome)} cadastrado.</b><br>Matrícula: <b>${esc(mat)}</b> · Senha provisória: <b>${pw}</b><br>Anote agora: ela não será exibida novamente.`;
+    staff.push({...d,ativo:true,senha});
+    $("#cred").innerHTML=`<b>${esc(nome)} cadastrado.</b><br>Já pode entrar com a matrícula <b>${esc(mat)}</b> e a senha definida.`;
     $("#cred").classList.add("show");toast("Funcionário cadastrado.");
   }
   save();const keep=$("#cred").classList.contains("show");resetForm();if(keep)$("#cred").classList.add("show");render();
@@ -179,7 +183,7 @@ $("#tb").addEventListener("click",e=>{
   const ed=e.target.closest("[data-e]"),tg=e.target.closest("[data-t]");
   if(ed){
     const s=staff.find(x=>x.mat===ed.dataset.e);editing=s.mat;
-    $("#nome").value=s.nome;$("#mat").value=s.mat;$("#mat").disabled=true;$("#area").value=s.area;fillCargos(s.cargo);
+    $("#nome").value=s.nome;$("#mat").value=s.mat;$("#mat").disabled=true;$("#senha").value="";$("#lsenha").textContent="Nova senha (opcional)";$("#senha").placeholder="Deixe em branco para manter a atual";$("#area").value=s.area;fillCargos(s.cargo);
     sel=new Set(s.setores);renderSetores();
     $("#ftitle").textContent="Editar Funcionário";$("#save").textContent="Salvar Alterações";$("#cancel").hidden=false;$("#cred").classList.remove("show");
     window.scrollTo({top:0,behavior:"smooth"});
