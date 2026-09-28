@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sistema de Triagem Hospitalar</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--primary:#0284c7;--ink:#0f172a;--muted:#94a3b8;--label:#475569;--border:#e2e8f0;--tint:#f0f9ff;--danger:#ef4444}
+*{box-sizing:border-box;margin:0;padding:0;font-family:Geist,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+body{background:#f8fafc;color:var(--ink);min-height:100vh}
+svg.i{width:1em;height:1em;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+header{background:#fff;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;padding:16px 32px;gap:16px}
+.logo{display:flex;gap:12px;align-items:center}
+.badge{background:var(--primary);color:#fff;width:40px;height:40px;border-radius:10px;display:grid;place-items:center;font-size:24px}
+.logo h1{font-size:18px;font-weight:700}
+.logo small{display:block;margin-top:2px;font-size:11px;font-weight:500;color:var(--primary);text-transform:uppercase}
+.user{display:flex;gap:16px;align-items:center;text-align:right}
+.user b{display:block;font-size:14px;font-weight:600}
+.user span{font-size:12px;color:var(--label)}
+.avatar{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#0284c7,#059669);color:#fff;display:grid;place-items:center;font-weight:600;font-size:15px}
+main{padding:32px;display:flex;flex-direction:column;gap:24px}
+.grid{display:flex;gap:24px;align-items:stretch}
+.grid>.card:first-child{flex:1;min-width:0}
+.grid>.card:last-child{width:420px;flex-shrink:0}
+.card{background:#fff;border:1px solid var(--border);border-radius:16px;padding:28px;display:flex;flex-direction:column;gap:20px}
+.card-h{display:flex;gap:12px;align-items:center;padding-bottom:20px;border-bottom:1px solid var(--border)}
+.ico{background:var(--tint);color:var(--primary);width:32px;height:32px;border-radius:8px;display:grid;place-items:center;font-size:18px}
+.card-h h2{font-size:16px;font-weight:600}
+.card-h p{font-size:12px;color:var(--muted);margin-top:2px}
+.stack{display:flex;flex-direction:column;gap:16px}
+.row{display:flex;gap:16px;align-items:flex-end}
+.field{display:flex;flex-direction:column;gap:6px;flex:1;min-width:0}
+label,.lbl{font-size:13px;font-weight:500;color:var(--label)}
+label i{color:var(--danger);font-style:normal;margin-left:4px}
+.hint{font-size:11px;color:var(--muted)}
+input[type=text],input[type=number],textarea{width:100%;background:#fff;border:1px solid var(--border);border-radius:8px;padding:10px 14px;font-size:14px;color:var(--ink);outline:none;transition:.15s}
+input::placeholder,textarea::placeholder{color:var(--muted)}
+input:focus,textarea:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(2,132,199,.15)}
+.invalid{border-color:var(--danger)!important}
+.err{font-size:11px;color:var(--danger);min-height:0}
+textarea{height:160px;resize:vertical;line-height:1.4}
+.btn{display:flex;gap:8px;align-items:center;justify-content:center;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;padding:14px 24px;border:1px solid var(--border);background:#fff;color:var(--label);transition:.15s}
+.btn:hover{background:#f8fafc}
+.btn.p{background:var(--primary);border-color:var(--primary);color:#fff;padding:14px 28px}
+.btn.p:hover{background:#0369a1}
+.btn.s{background:var(--tint);border-color:var(--primary);color:var(--primary);height:44px;padding:0 20px;white-space:nowrap}
+.btn.s:hover{background:#e0f2fe}
+.vital{display:flex;align-items:center;gap:8px;border:1px solid var(--border);border-radius:8px;padding:0 12px;background:#fff}
+.vital:focus-within{border-color:var(--primary);box-shadow:0 0 0 3px rgba(2,132,199,.15)}
+.vital .i{color:var(--muted);font-size:16px}
+.vital input{border:0;box-shadow:none!important;padding:10px 0;font-weight:500}
+.vital span{font-size:12px;font-weight:600;color:var(--muted)}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{background:#fff;border:1px solid var(--primary);color:var(--primary);border-radius:999px;padding:8px 12px;font-size:12px;font-weight:600;cursor:pointer;transition:.15s}
+.chip:hover{background:var(--tint)}
+.chip.on{background:var(--primary);color:#fff}
+.risk{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}
+.rc{background:#fff;border:1px solid var(--border);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:12px;cursor:pointer;text-align:left;transition:.15s;border-width:1px}
+.rc:hover{transform:translateY(-1px);box-shadow:0 4px 10px rgba(15,23,42,.06)}
+.rt{display:flex;justify-content:space-between;align-items:center;min-height:24px}
+.pill{color:#fff;font-size:10px;font-weight:700;text-transform:uppercase;padding:4px 10px;border-radius:999px}
+.tick{display:none;width:18px;height:18px;border-radius:50%;color:#fff;place-items:center;font-size:12px}
+.rc b{font-size:13px;font-weight:600;display:block;margin-bottom:4px}
+.rc small{font-size:11px;color:var(--label);line-height:1.3}
+.rc.sel{border-width:2px;padding:15px}
+.rc.sel .tick{display:grid}
+.red .pill{background:#ef4444}.red b{color:#991b1b}.red.sel{background:#fef2f2;border-color:#ef4444}.red .tick{background:#ef4444}
+.orange .pill{background:#f97316}.orange b{color:#9a3412}.orange.sel{background:#fff7ed;border-color:#f97316}.orange .tick{background:#f97316}
+.yellow .pill{background:#eab308}.yellow b{color:#854d0e}.yellow.sel{background:#fefce8;border-color:#eab308;box-shadow:0 4px 6px rgba(234,179,8,.12)}.yellow .tick{background:#eab308}
+.green .pill{background:#22c55e}.green b{color:#166534}.green.sel{background:#f0fdf4;border-color:#22c55e}.green .tick{background:#22c55e}
+.blue .pill{background:#3b82f6}.blue b{color:#1e40af}.blue.sel{background:#eff6ff;border-color:#3b82f6}.blue .tick{background:#3b82f6}
+.status{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.st{display:flex;gap:12px;align-items:center;border:1px solid var(--border);border-radius:8px;padding:12px 16px;cursor:pointer;font-size:14px;background:#fff;transition:.15s}
+.st input{display:none}
+.dot{width:18px;height:18px;border-radius:50%;border:1px solid var(--muted);background:#fff;flex-shrink:0;transition:.15s}
+.st:has(input:checked){background:var(--tint);border-color:var(--primary);color:var(--primary);font-weight:600}
+.st:has(input:checked) .dot{border:5px solid var(--primary)}
+footer{display:flex;justify-content:space-between;align-items:center;padding-top:8px;gap:16px;flex-wrap:wrap}
+.note{display:flex;gap:8px;align-items:center;font-size:12px;color:var(--muted)}
+.actions{display:flex;gap:16px}
+#toast{position:fixed;bottom:24px;left:50%;transform:translate(-50%,20px);background:var(--ink);color:#fff;padding:14px 20px;border-radius:10px;font-size:14px;opacity:0;pointer-events:none;transition:.25s;max-width:calc(100% - 32px);box-shadow:0 10px 25px rgba(0,0,0,.25);z-index:9}
+#toast.show{opacity:1;transform:translate(-50%,0)}
+#toast.bad{background:#b91c1c}
+@media(max-width:980px){.grid{flex-direction:column}.grid>.card:last-child{width:100%}.risk{grid-template-columns:repeat(2,1fr)}.status{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:600px){header{padding:14px 16px}main{padding:16px}.user div{display:none}.row{flex-direction:column;align-items:stretch}.card{padding:20px}.risk,.status{grid-template-columns:1fr}.actions,.actions .btn{width:100%}.logo h1{font-size:15px}}
+</style>
+<script src="auth.js"></script>
+<script>DS.guard({setor:"enfermagem:Triagem"})</script>
+</head>
+<body>
+<header>
+  <div class="logo">
+    <div class="badge"><svg class="i" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></div>
+    <div><h1>Sistema de Triagem Hospitalar</h1><small>Pronto Atendimento &amp; Emergência</small></div>
+  </div>
+  <div class="user">
+    <div><b>Enf. Maria Silva</b><span>Coren: 123.456 — Triagem</span></div>
+    <div class="avatar">MS</div>
+  </div>
+</header>
+
+<main>
+  <form id="f" novalidate style="display:contents">
+  <div class="grid">
+    <section class="card">
+      <div class="card-h"><div class="ico"><svg class="i" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="12" cy="10" r="3"/><path d="M7 21v-2a4 4 0 0 1 4-4h2a4 4 0 0 1 4 4v2"/></svg></div><div><h2>Dados do Paciente</h2><p>Identificação e verificação cadastral no SUS/Prontuário</p></div></div>
+      <div class="stack">
+        <div class="row">
+          <div class="field"><label for="cpf">CPF<i>*</i></label><input type="text" id="cpf" inputmode="numeric" maxlength="14" placeholder="000.000.000-00" autocomplete="off"><span class="hint">Digite apenas números para consulta rápida</span></div>
+          <button type="button" class="btn s" id="busca"><svg class="i" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>Buscar Paciente</button>
+        </div>
+        <div class="row">
+          <div class="field"><label for="nome">Nome Completo<i>*</i></label><input type="text" id="nome" placeholder="Ex: João da Silva Sauro" autocomplete="off"></div>
+          <div class="field" style="flex:0 0 220px;max-width:100%"><label for="dn">Data de Nascimento<i>*</i></label><input type="text" id="dn" inputmode="numeric" maxlength="10" placeholder="DD/MM/AAAA" autocomplete="off"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="card-h"><div class="ico"><svg class="i" viewBox="0 0 24 24"><path d="M19 14c1.5-1.5 3-3.2 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.8 0-3 .5-4.5 2-1.5-1.5-2.7-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4 3 5.5l7 7Z"/><path d="M3.2 12h4l1.3-2 3 4 1.5-2h4"/></svg></div><div><h2>Sinais Vitais</h2><p>Aferição física atual do paciente</p></div></div>
+      <div class="stack">
+        <div class="field"><label for="pa">Pressão Arterial</label><div class="vital"><svg class="i" viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg><input type="text" id="pa" inputmode="numeric" maxlength="7" placeholder="120/80 mmHg"><span>mmHg</span></div></div>
+        <div class="row" style="align-items:flex-start">
+          <div class="field"><label for="temp">Temperatura</label><div class="vital"><svg class="i" viewBox="0 0 24 24"><path d="M14 4v10.5a4 4 0 1 1-4 0V4a2 2 0 0 1 4 0Z"/></svg><input type="number" id="temp" step="0.1" min="30" max="45" placeholder="36.5 °C"><span>°C</span></div></div>
+          <div class="field"><label for="peso">Peso</label><div class="vital"><svg class="i" viewBox="0 0 24 24"><path d="M12 3v18M6 21h12M5 8l-3 8a4 4 0 0 0 6 0Zm14 0-3 8a4 4 0 0 0 6 0ZM5 8h14"/></svg><input type="number" id="peso" step="0.01" min="0" max="500" placeholder="70.00 kg"><span>kg</span></div></div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <section class="card">
+    <div class="card-h"><div class="ico"><svg class="i" viewBox="0 0 24 24"><path d="M11 2v2M5 2v2M5 3H4a2 2 0 0 0-2 2v4a6 6 0 0 0 12 0V5a2 2 0 0 0-2-2h-1"/><path d="M8 15a6 6 0 0 0 12 0v-3"/><circle cx="20" cy="10" r="2"/></svg></div><div><h2>Queixa Principal / Sintomas</h2><p>Descrição detalhada do quadro clínico apresentado</p></div></div>
+    <div class="stack">
+      <div class="field"><label for="desc">Descrição dos Sintomas</label><textarea id="desc" placeholder="Descreva o que o paciente está sentindo..."></textarea></div>
+      <div class="field" style="flex:none;width:320px;max-width:100%"><label for="inicio">Início dos Sintomas</label><input type="text" id="inicio" placeholder="Há quanto tempo?" autocomplete="off"></div>
+      <div class="field" style="gap:12px"><span class="lbl">Sintomas comuns</span>
+        <div class="chips" id="chips"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="card-h"><div class="ico"><svg class="i" viewBox="0 0 24 24"><path d="M20 13c0 5-3.5 7.5-7.7 8.97a1 1 0 0 1-.6-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.2-2.7a1.2 1.2 0 0 1 1.6 0C14.5 3.8 17 5 19 5a1 1 0 0 1 1 1Z"/><path d="M12 8v4M12 16h.01"/></svg></div><div><h2>Classificação de Risco (Protocolo Manchester)</h2><p>Selecione o nível de urgência com base nos sintomas apresentados</p></div></div>
+    <div class="risk" id="risk"></div>
+  </section>
+
+  <section class="card">
+    <div class="card-h"><div class="ico"><svg class="i" viewBox="0 0 24 24"><path d="M12 13v8M12 3v3M18 6H6l-2 2 2 2h12l2-2ZM6 16h12l2-2-2-2H6"/></svg></div><div><h2>Status do Atendimento</h2><p>Direcionamento inicial pós-triagem</p></div></div>
+    <div class="status" id="status"></div>
+  </section>
+
+  <footer>
+    <div class="note"><svg class="i" viewBox="0 0 24 24" style="font-size:14px"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>Os dados registrados serão anexados diretamente ao Prontuário Eletrônico do Paciente.</div>
+    <div class="actions">
+      <button type="button" class="btn" id="cancel">Cancelar</button>
+      <button type="submit" class="btn p"><svg class="i" viewBox="0 0 24 24"><path d="M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z"/><path d="M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7M7 3v4a1 1 0 0 0 1 1h7"/></svg>Registrar Triagem</button>
+    </div>
+  </footer>
+  </form>
+</main>
+<div id="toast" role="status"></div>
+
+<script>
+const $=s=>document.querySelector(s);
+const RISKS=[["red","Vermelho","Emergência (Atendimento imediato)"],["orange","Laranja","Muito Urgente (Atendimento em até 10min)"],["yellow","Amarelo","Urgente (Atendimento em até 60min)"],["green","Verde","Pouco Urgente (Atendimento em até 120min)"],["blue","Azul","Não Urgente (Atendimento em até 240min)"]];
+const STATUS=["Aguardando Médico","Em Atendimento","Medicação","Alta"];
+const SYMPTOMS=["Dor de Cabeça","Febre","Náusea","Tontura","Dor no Peito","Falta de Ar","Dor Abdominal","Vômito"];
+// Base simulada de pacientes (substitua por chamada à sua API/prontuário)
+const PACIENTES={"52998224725":{nome:"Ana Beatriz Souza",dn:"14/03/1988"},"11144477735":{nome:"Carlos Eduardo Lima",dn:"02/11/1975"}};
+let risk="yellow";const sel=new Set();
+
+// Render
+$("#risk").innerHTML=RISKS.map(([c,t,d])=>`<button type="button" class="rc ${c}${c===risk?" sel":""}" data-r="${c}" aria-pressed="${c===risk}"><div class="rt"><span class="pill">${t}</span><span class="tick"><svg class="i" viewBox="0 0 24 24" style="stroke-width:3"><path d="M20 6 9 17l-5-5"/></svg></span></div><div><b>${t}</b><small>${d}</small></div></button>`).join("");
+$("#status").innerHTML=STATUS.map((s,i)=>`<label class="st"><input type="radio" name="status" value="${s}"${i?"":" checked"}><span class="dot"></span>${s}</label>`).join("");
+$("#chips").innerHTML=SYMPTOMS.map(s=>`<button type="button" class="chip" aria-pressed="false">${s}</button>`).join("");
+
+// Interações
+$("#risk").onclick=e=>{const b=e.target.closest(".rc");if(!b)return;risk=b.dataset.r;document.querySelectorAll(".rc").forEach(x=>{const on=x===b;x.classList.toggle("sel",on);x.setAttribute("aria-pressed",on)})};
+$("#chips").onclick=e=>{const b=e.target.closest(".chip");if(!b)return;const t=b.textContent;sel.has(t)?sel.delete(t):sel.add(t);b.classList.toggle("on",sel.has(t));b.setAttribute("aria-pressed",sel.has(t))};
+
+const digits=v=>v.replace(/\D/g,"");
+$("#cpf").oninput=e=>{let v=digits(e.target.value).slice(0,11);v=v.replace(/(\d{3})(\d)/,"$1.$2").replace(/(\d{3})(\d)/,"$1.$2").replace(/(\d{3})(\d{1,2})$/,"$1-$2");e.target.value=v};
+$("#dn").oninput=e=>{let v=digits(e.target.value).slice(0,8);v=v.replace(/(\d{2})(\d)/,"$1/$2").replace(/(\d{2})(\d)/,"$1/$2");e.target.value=v};
+$("#pa").oninput=e=>{let v=e.target.value.replace(/[^\d/]/g,"");const [a,...r]=v.split("/");v=r.length?a.slice(0,3)+"/"+r.join("").slice(0,3):a.length>3?a.slice(0,3)+"/"+a.slice(3,6):a;e.target.value=v};
+
+function cpfOk(c){c=digits(c);if(c.length!==11||/^(\d)\1+$/.test(c))return false;for(let t=9;t<11;t++){let s=0;for(let i=0;i<t;i++)s+=c[i]*(t+1-i);if(((s*10)%11)%10!=c[t])return false}return true}
+function dateOk(v){const m=v.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);if(!m)return false;const d=new Date(+m[3],m[2]-1,+m[1]);return d.getFullYear()==m[3]&&d.getMonth()==m[2]-1&&d.getDate()==m[1]&&d<=new Date()&&m[3]>=1900}
+
+let tt;function toast(msg,bad){const t=$("#toast");t.textContent=msg;t.className="show"+(bad?" bad":"");clearTimeout(tt);tt=setTimeout(()=>t.className="",4200)}
+function flag(id,bad){$(id).classList.toggle("invalid",bad)}
+
+$("#busca").onclick=()=>{
+  const c=digits($("#cpf").value);
+  if(!cpfOk(c)){flag("#cpf",true);return toast("Informe um CPF válido para buscar.",true)}
+  flag("#cpf",false);
+  const p=PACIENTES[c];
+  if(p){$("#nome").value=p.nome;$("#dn").value=p.dn;flag("#nome",false);flag("#dn",false);toast("Paciente encontrado: "+p.nome)}
+  else toast("Paciente não encontrado. Preencha os dados manualmente.",true)
+};
+
+function reset(){$("#f").reset();sel.clear();document.querySelectorAll(".chip").forEach(c=>{c.classList.remove("on");c.setAttribute("aria-pressed","false")});document.querySelectorAll(".invalid").forEach(x=>x.classList.remove("invalid"));risk="yellow";document.querySelectorAll(".rc").forEach(x=>{const on=x.dataset.r===risk;x.classList.toggle("sel",on);x.setAttribute("aria-pressed",on)})}
+$("#cancel").onclick=()=>{reset();toast("Triagem cancelada.")};
+
+$("#f").onsubmit=e=>{
+  e.preventDefault();
+  const bad=[];
+  const chk=(id,ok,msg)=>{flag(id,!ok);if(!ok)bad.push(msg)};
+  chk("#cpf",cpfOk($("#cpf").value),"CPF inválido");
+  chk("#nome",$("#nome").value.trim().split(/\s+/).filter(Boolean).length>=2,"informe o nome completo");
+  chk("#dn",dateOk($("#dn").value),"data de nascimento inválida");
+  const t=$("#temp").value;if(t)chk("#temp",+t>=30&&+t<=45,"temperatura fora do intervalo (30–45 °C)");else flag("#temp",false);
+  if(bad.length)return toast("Revise: "+bad.join("; ")+".",true);
+  const reg={
+    cpf:$("#cpf").value,nome:$("#nome").value.trim(),nascimento:$("#dn").value,
+    sinaisVitais:{pressao:$("#pa").value,temperatura:$("#temp").value,peso:$("#peso").value},
+    sintomas:{descricao:$("#desc").value.trim(),inicio:$("#inicio").value.trim(),comuns:[...sel]},
+    classificacao:RISKS.find(r=>r[0]===risk)[1],
+    status:document.querySelector('input[name=status]:checked').value,
+    registradoEm:new Date().toISOString(),profissional:"Enf. Maria Silva — Coren 123.456"
+  };
+  console.log("Triagem registrada:",reg); // envie `reg` para sua API aqui
+  toast(`Triagem registrada: ${reg.nome} — ${reg.classificacao} — ${reg.status}`);
+  reset()
+};
+</script>
+</body>
+</html>

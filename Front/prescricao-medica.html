@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Prescrição Médica - Sistema Hospitalar</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--primary:#0284c7;--ink:#0f172a;--muted:#94a3b8;--label:#475569;--border:#e2e8f0;--danger:#ef4444}
+*{box-sizing:border-box;margin:0;padding:0;font-family:Geist,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+body{background:#f8fafc;color:var(--ink);min-height:100vh}
+svg.i{width:1em;height:1em;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+header{background:#fff;border-bottom:1px solid var(--border);height:72px;display:flex;justify-content:space-between;align-items:center;padding:0 40px;gap:16px}
+.logo{display:flex;gap:12px;align-items:center}
+.badge{background:var(--primary);color:#fff;width:40px;height:40px;border-radius:8px;display:grid;place-items:center;font-size:24px}
+.logo h1{font-size:18px;font-weight:700}
+.logo small{display:block;margin-top:2px;font-size:11px;font-weight:500;color:var(--muted);text-transform:uppercase}
+.user{display:flex;gap:16px;align-items:center;text-align:right}
+.user b{display:block;font-size:14px;font-weight:600}
+.user span{font-size:12px;color:var(--label)}
+.avatar{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#0284c7,#059669);color:#fff;display:grid;place-items:center;font-weight:600;font-size:15px}
+main{padding:40px;display:flex;flex-direction:column;gap:24px}
+.card{background:#fff;border:1px solid var(--border);border-radius:12px;padding:24px;box-shadow:0 4px 6px rgba(0,0,0,.03)}
+.title{display:flex;gap:10px;align-items:center;font-size:16px;font-weight:700}
+.title .i{color:var(--primary);font-size:18px}
+.hr{border:0;border-top:1px solid var(--border);margin:16px 0}
+.sum-top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.tags{display:flex;gap:10px;flex-wrap:wrap}
+.tag{font-size:12px;font-weight:700;text-transform:uppercase;padding:4px 10px;border-radius:6px;white-space:nowrap}
+.pdata{display:flex;gap:32px;flex-wrap:wrap}
+.pdata>div{display:flex;flex-direction:column;gap:4px}
+.pdata>div:first-child{flex:1;min-width:200px}
+.pdata>div:not(:first-child){width:180px}
+.pdata span{font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase}
+.pdata b{font-size:15px;font-weight:600}
+.ws{display:grid;grid-template-columns:480px 1fr;gap:24px;align-items:start}
+.form{display:flex;flex-direction:column;gap:16px}
+.field{display:flex;flex-direction:column;gap:6px;position:relative;min-width:0}
+.row{display:flex;gap:12px}
+label{font-size:13px;font-weight:600;color:var(--label)}
+.ctl{display:flex;align-items:center;gap:8px;height:40px;border:1px solid var(--border);border-radius:8px;padding:0 12px;background:#fff;transition:.15s}
+.ctl:focus-within{border-color:var(--primary);box-shadow:0 0 0 3px rgba(2,132,199,.15)}
+.ctl.bad,.ta.bad{border-color:var(--danger)}
+.ctl input,.ctl select,textarea{border:0;outline:0;background:transparent;font-size:14px;color:var(--ink);width:100%;height:100%}
+.ctl select{appearance:none;cursor:pointer;padding-right:4px}
+.ctl input::placeholder,textarea::placeholder{color:var(--muted)}
+.ctl .i{color:var(--label);font-size:14px;pointer-events:none}
+.ctl .sfx{font-size:14px;font-weight:500;color:var(--label);white-space:nowrap}
+.ta{border:1px solid var(--border);border-radius:8px;padding:12px;height:80px;transition:.15s}
+.ta:focus-within{border-color:var(--primary);box-shadow:0 0 0 3px rgba(2,132,199,.15)}
+textarea{resize:none;font-family:inherit;line-height:1.35}
+.err{font-size:11px;color:var(--danger)}
+.btn{display:flex;gap:8px;align-items:center;justify-content:center;height:44px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;border:1px solid var(--border);background:#fff;color:var(--label);padding:0 24px;transition:.15s}
+.btn:hover{background:#f8fafc}
+.btn.p{background:var(--primary);border-color:var(--primary);color:#fff;width:100%}
+.btn.p:hover{background:#0369a1}
+.btn.g{background:#10b981;border-color:#10b981;color:#fff}
+.btn.g:hover{background:#059669}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.link{background:none;border:0;color:var(--label);font-size:13px;font-weight:600;cursor:pointer;text-decoration:underline;align-self:center}
+.dd{position:absolute;top:70px;left:0;right:0;background:#fff;border:1px solid var(--border);border-radius:8px;box-shadow:0 10px 20px rgba(15,23,42,.1);max-height:220px;overflow:auto;z-index:5;display:none}
+.dd.open{display:block}
+.dd div{padding:9px 12px;font-size:14px;cursor:pointer}
+.dd div:hover,.dd div.act{background:#f0f9ff;color:var(--primary)}
+.dd small{color:var(--muted);font-size:12px;margin-left:6px}
+.tw{border:1px solid var(--border);border-radius:8px;overflow:auto}
+table{width:100%;border-collapse:collapse;min-width:640px}
+th{background:#f1f5f9;color:var(--label);font-size:12px;font-weight:700;text-align:left;padding:12px 16px;text-transform:uppercase}
+td{padding:14px 16px;font-size:13px;color:var(--label);border-bottom:1px solid var(--border)}
+tr:last-child td{border-bottom:0}
+td.n{font-weight:600;color:var(--ink)}
+td.d{color:var(--muted)}
+td.n small{display:block;font-weight:400;color:var(--muted);font-size:11px;margin-top:2px}
+th:last-child,td:last-child{text-align:right;white-space:nowrap}
+.ib{width:28px;height:28px;border-radius:6px;border:0;cursor:pointer;display:inline-grid;place-items:center;margin-left:8px;font-size:14px;transition:.15s}
+.ib.e{background:#f8fafc;color:var(--ink)}.ib.e:hover{background:#e2e8f0}
+.ib.x{background:#fef2f2;color:var(--danger)}.ib.x:hover{background:#fee2e2}
+tr.editing td{background:#f0f9ff}
+.empty{padding:32px 16px;text-align:center;color:var(--muted);font-size:13px}
+.legend{display:flex;gap:6px;align-items:center;font-size:12px;color:var(--muted);margin-top:20px}
+.legend .i{font-size:14px}
+footer{border-top:1px solid var(--border);padding-top:24px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+#toast{position:fixed;bottom:24px;left:50%;transform:translate(-50%,20px);background:var(--ink);color:#fff;padding:14px 20px;border-radius:10px;font-size:14px;opacity:0;pointer-events:none;transition:.25s;max-width:calc(100% - 32px);box-shadow:0 10px 25px rgba(0,0,0,.25);z-index:9}
+#toast.show{opacity:1;transform:translate(-50%,0)}
+#toast.bad{background:#b91c1c}
+@media(max-width:1020px){.ws{grid-template-columns:1fr}}
+@media(max-width:640px){header{padding:0 16px}main{padding:16px}.user div{display:none}.logo h1{font-size:15px}.pdata>div:not(:first-child){width:calc(50% - 16px)}footer .btn{width:100%}}
+</style>
+<script src="auth.js"></script>
+<script>DS.guard({setor:"medica:Prescrição"})</script>
+</head>
+<body>
+<header>
+  <div class="logo">
+    <div class="badge"><svg class="i" viewBox="0 0 24 24"><path d="M11 2a2 2 0 0 0-2 2v5H4a2 2 0 0 0-2 2v2c0 1.1.9 2 2 2h5v5c0 1.1.9 2 2 2h2a2 2 0 0 0 2-2v-5h5a2 2 0 0 0 2-2v-2a2 2 0 0 0-2-2h-5V4a2 2 0 0 0-2-2Z"/></svg></div>
+    <div><h1>Sistema Hospitalar</h1><small>Módulo de Atendimento</small></div>
+  </div>
+  <div class="user"><div><b>Dr. Carlos Mendes</b><span>CRM 123456-SP — Clínico Geral</span></div><div class="avatar">CM</div></div>
+</header>
+
+<main>
+  <section class="card">
+    <div class="sum-top">
+      <div class="title"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="10" r="3"/><path d="M7 20.7a7 7 0 0 1 10 0"/></svg>Informações do Paciente em Atendimento</div>
+      <div class="tags"><span class="tag" style="background:#fef08a;color:#854d0e">Amarelo — Urgente</span><span class="tag" style="background:#e0f2fe;color:#0369a1">Em Atendimento</span></div>
+    </div>
+    <hr class="hr">
+    <div class="pdata">
+      <div><span>Nome do Paciente</span><b>João da Silva Santos</b></div>
+      <div><span>CPF</span><b>123.456.789-00</b></div>
+      <div><span>Data de Nascimento</span><b id="nasc"></b></div>
+      <div><span>Nº Prontuário</span><b>#854.291-A</b></div>
+    </div>
+  </section>
+
+  <div class="ws">
+    <form class="card form" id="f" novalidate>
+      <div class="title"><svg class="i" viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 2v2M12 2v2M16 2v2M8 10h8M8 14h8M8 18h5"/></svg><span id="ftitle">Nova Prescrição</span></div>
+      <hr class="hr" style="margin:-4px 0 0">
+
+      <div class="field"><label for="med">Medicamento</label>
+        <div class="ctl" id="cmed"><input id="med" type="text" placeholder="Buscar medicamento..." autocomplete="off" role="combobox" aria-expanded="false" aria-controls="dd"><svg class="i" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></div>
+        <div class="dd" id="dd" role="listbox"></div>
+      </div>
+
+      <div class="row">
+        <div class="field" style="width:180px"><label for="dose">Dose</label><div class="ctl" id="cdose"><input id="dose" type="number" min="0" step="any" inputmode="decimal" placeholder="Ex: 500"></div></div>
+        <div class="field" style="flex:1"><label for="un">Unidade de Medida</label><div class="ctl"><select id="un"><option>mg</option><option>g</option><option>mcg</option><option>mL</option><option>UI</option><option>comprimido(s)</option><option>gota(s)</option></select><svg class="i" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></div></div>
+      </div>
+
+      <div class="field"><label for="via">Via de Administração</label><div class="ctl"><select id="via"><option value="EV">Endovenosa (EV)</option><option value="VO">Via Oral (VO)</option><option value="IM">Intramuscular (IM)</option><option value="SC">Subcutânea (SC)</option><option value="SL">Sublingual (SL)</option><option value="INAL">Inalatória</option><option value="TOP">Tópica</option></select><svg class="i" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></div></div>
+
+      <div class="field"><label for="int">Intervalo</label><div class="ctl" id="cint"><input id="int" type="number" min="1" max="72" step="1" inputmode="numeric" placeholder="Ex: 8"><span class="sfx">em ___ horas</span></div></div>
+
+      <div class="field"><label for="obs">Observações (Opcional)</label><div class="ta"><textarea id="obs" maxlength="300" placeholder="Digite observações de diluição, velocidade de infusão, etc..."></textarea></div></div>
+
+      <button type="submit" class="btn p" id="add"><svg class="i" viewBox="0 0 24 24" style="font-size:16px"><path d="M5 12h14M12 5v14"/></svg><span>Adicionar Prescrição</span></button>
+      <button type="button" class="link" id="cancelEdit" hidden>Cancelar edição</button>
+    </form>
+
+    <section class="card">
+      <div class="title"><svg class="i" viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>Prescrições do Atendimento</div>
+      <hr class="hr">
+      <div class="tw"><table><thead><tr><th>Medicamento</th><th style="width:100px">Dose</th><th style="width:80px">Via</th><th style="width:90px">Intervalo</th><th style="width:150px">Data/Hora</th><th style="width:100px">Ações</th></tr></thead><tbody id="tb"></tbody></table></div>
+      <div class="legend"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>As prescrições listadas serão impressas e enviadas diretamente à equipe de enfermagem.</div>
+    </section>
+  </div>
+
+  <footer>
+    <button class="btn" id="voltar" type="button"><svg class="i" viewBox="0 0 24 24" style="font-size:16px"><path d="m12 19-7-7 7-7M19 12H5"/></svg>Voltar ao Painel</button>
+    <button class="btn g" id="fin" type="button"><svg class="i" viewBox="0 0 24 24" style="font-size:16px"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>Finalizar Atendimento</button>
+  </footer>
+</main>
+<div id="toast" role="status"></div>
+
+<script>
+const $=s=>document.querySelector(s);
+const MEDS=["Dipirona Sódica","Paracetamol","Ibuprofeno","Omeprazol","Ondansetrona","Metoclopramida","Ceftriaxona","Amoxicilina","Ciprofloxacino","Dexametasona","Hidrocortisona","Furosemida","Captopril","Losartana","Metformina","Insulina Regular","Salbutamol","Morfina","Tramadol","Cetorolaco","Buscopan (Escopolamina)","Soro Fisiológico 0,9%","Ringer Lactato"];
+const p2=n=>String(n).padStart(2,"0");
+const stamp=d=>`${p2(d.getDate())}/${p2(d.getMonth()+1)}/${d.getFullYear()} ${p2(d.getHours())}:${p2(d.getMinutes())}`;
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+let rx=[
+  {id:1,med:"Dipirona Sódica",dose:500,un:"mg",via:"EV",int:6,obs:"",dt:"24/09/2026 14:30"},
+  {id:2,med:"Omeprazol",dose:40,un:"mg",via:"EV",int:24,obs:"",dt:"24/09/2026 14:32"},
+  {id:3,med:"Ondansetrona",dose:4,un:"mg",via:"EV",int:8,obs:"",dt:"24/09/2026 14:35"}];
+let nextId=4,editId=null,done=false;
+
+// Idade calculada a partir da data de nascimento
+(()=>{const b=new Date(1985,2,15),n=new Date();let a=n.getFullYear()-b.getFullYear();if(n<new Date(n.getFullYear(),2,15))a--;$("#nasc").textContent=`15/03/1985 (${a} anos)`})();
+
+let tt;function toast(m,bad){const t=$("#toast");t.textContent=m;t.className="show"+(bad?" bad":"");clearTimeout(tt);tt=setTimeout(()=>t.className="",3800)}
+
+function render(){
+  const tb=$("#tb");
+  tb.innerHTML=rx.length?rx.map(r=>`<tr class="${r.id===editId?"editing":""}"><td class="n">${esc(r.med)}${r.obs?`<small>${esc(r.obs)}</small>`:""}</td><td>${r.dose} ${esc(r.un)}</td><td>${r.via}</td><td>${r.int}/${r.int}h</td><td class="d">${r.dt}</td><td><button class="ib e" data-e="${r.id}" aria-label="Editar ${esc(r.med)}" ${done?"disabled":""}><svg class="i" viewBox="0 0 24 24"><path d="M21.2 5.6 18.4 2.8a2 2 0 0 0-2.8 0L3 15.4V21h5.6L21.2 8.4a2 2 0 0 0 0-2.8ZM15 5l4 4"/></svg></button><button class="ib x" data-x="${r.id}" aria-label="Remover ${esc(r.med)}" ${done?"disabled":""}><svg class="i" viewBox="0 0 24 24"><path d="M3 6h18M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6M10 11v6M14 11v6M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button></td></tr>`).join(""):`<tr><td colspan="6" class="empty">Nenhuma prescrição adicionada neste atendimento.</td></tr>`;
+}
+
+// Combobox de medicamento
+const med=$("#med"),dd=$("#dd");let act=-1;
+function showDD(){
+  const q=med.value.trim().toLowerCase();
+  const l=MEDS.filter(m=>m.toLowerCase().includes(q)).slice(0,30);
+  let h=l.map((m,i)=>`<div role="option" data-v="${esc(m)}" class="${i===act?"act":""}">${esc(m)}</div>`).join("");
+  if(q&&!MEDS.some(m=>m.toLowerCase()===q))h+=`<div role="option" data-v="${esc(med.value.trim())}">Usar “${esc(med.value.trim())}”<small>(digitado)</small></div>`;
+  dd.innerHTML=h||`<div style="color:var(--muted);cursor:default">Sem resultados</div>`;
+  dd.classList.add("open");med.setAttribute("aria-expanded","true");
+}
+function hideDD(){dd.classList.remove("open");med.setAttribute("aria-expanded","false");act=-1}
+med.addEventListener("focus",showDD);
+med.addEventListener("input",()=>{act=-1;showDD();$("#cmed").classList.remove("bad")});
+med.addEventListener("keydown",e=>{
+  const o=[...dd.querySelectorAll("[data-v]")];
+  if(e.key==="ArrowDown"){e.preventDefault();act=Math.min(act+1,o.length-1);showDD()}
+  else if(e.key==="ArrowUp"){e.preventDefault();act=Math.max(act-1,0);showDD()}
+  else if(e.key==="Enter"&&dd.classList.contains("open")&&act>=0){e.preventDefault();med.value=o[act].dataset.v;hideDD();$("#dose").focus()}
+  else if(e.key==="Escape")hideDD();
+});
+dd.addEventListener("mousedown",e=>{const o=e.target.closest("[data-v]");if(!o)return;e.preventDefault();med.value=o.dataset.v;hideDD();$("#cmed").classList.remove("bad");$("#dose").focus()});
+document.addEventListener("click",e=>{if(!e.target.closest(".field"))hideDD()});
+med.addEventListener("blur",()=>setTimeout(hideDD,120));
+
+function resetForm(){$("#f").reset();$("#via").value="EV";editId=null;$("#ftitle").textContent="Nova Prescrição";$("#add span").textContent="Adicionar Prescrição";$("#cancelEdit").hidden=true;document.querySelectorAll(".bad").forEach(x=>x.classList.remove("bad"));render()}
+
+$("#f").addEventListener("submit",e=>{
+  e.preventDefault();
+  if(done)return;
+  const m=med.value.trim(),dose=parseFloat($("#dose").value),iv=parseInt($("#int").value,10);
+  const okM=m.length>=2,okD=dose>0&&isFinite(dose),okI=iv>=1&&iv<=72;
+  $("#cmed").classList.toggle("bad",!okM);$("#cdose").classList.toggle("bad",!okD);$("#cint").classList.toggle("bad",!okI);
+  if(!okM)return toast("Informe o medicamento.",true);
+  if(!okD)return toast("Informe uma dose maior que zero.",true);
+  if(!okI)return toast("O intervalo deve ficar entre 1 e 72 horas.",true);
+  const dup=rx.some(r=>r.id!==editId&&r.med.toLowerCase()===m.toLowerCase());
+  if(dup&&!confirm(`“${m}” já está prescrito neste atendimento. Deseja adicionar mesmo assim?`))return;
+  const item={med:m,dose,un:$("#un").value,via:$("#via").value,int:iv,obs:$("#obs").value.trim()};
+  if(editId){const r=rx.find(x=>x.id===editId);Object.assign(r,item);toast("Prescrição atualizada.")}
+  else{rx.push({id:nextId++,...item,dt:stamp(new Date())});toast("Prescrição adicionada.")}
+  resetForm();
+});
+
+$("#tb").addEventListener("click",e=>{
+  const ed=e.target.closest("[data-e]"),dl=e.target.closest("[data-x]");
+  if(ed){const r=rx.find(x=>x.id==ed.dataset.e);editId=r.id;med.value=r.med;$("#dose").value=r.dose;$("#un").value=r.un;$("#via").value=r.via;$("#int").value=r.int;$("#obs").value=r.obs;
+    $("#ftitle").textContent="Editar Prescrição";$("#add span").textContent="Salvar Alteração";$("#cancelEdit").hidden=false;render();med.focus();hideDD()}
+  if(dl){const r=rx.find(x=>x.id==dl.dataset.x);if(!confirm(`Remover “${r.med}” das prescrições?`))return;rx=rx.filter(x=>x.id!==r.id);if(editId===r.id)resetForm();else render();toast("Prescrição removida.")}
+});
+$("#cancelEdit").onclick=resetForm;
+
+$("#voltar").onclick=()=>{if(!done&&(rx.length||med.value)&&!confirm("Voltar ao painel? Alterações não finalizadas serão mantidas apenas nesta tela."))return;toast("Voltando ao painel (simulado).")};
+
+$("#fin").onclick=()=>{
+  if(done)return;
+  if(!rx.length)return toast("Adicione ao menos uma prescrição antes de finalizar.",true);
+  if(!confirm(`Finalizar o atendimento com ${rx.length} prescrição(ões)? Elas serão enviadas à enfermagem.`))return;
+  const payload={paciente:"João da Silva Santos",prontuario:"#854.291-A",medico:"Dr. Carlos Mendes — CRM 123456-SP",prescricoes:rx,finalizadoEm:new Date().toISOString()};
+  console.log("Atendimento finalizado:",payload); // envie `payload` para sua API aqui
+  done=true;$("#fin").disabled=true;$("#add").disabled=true;document.querySelectorAll("#f input,#f select,#f textarea").forEach(x=>x.disabled=true);render();
+  toast("Atendimento finalizado. Prescrições enviadas à enfermagem.");
+};
+
+render();
+</script>
+</body>
+</html>

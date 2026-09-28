@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Administração - Cadastro de Funcionários</title>
+<style>
+:root{--primary:#0284c7;--ink:#0f172a;--muted:#94a3b8;--label:#475569;--border:#e2e8f0;--danger:#ef4444}
+*{box-sizing:border-box;margin:0;padding:0;font-family:Geist,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+body{background:#f8fafc;color:var(--ink);min-height:100vh}
+svg.i{width:1em;height:1em;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+header{background:#fff;border-bottom:1px solid var(--border);height:72px;display:flex;justify-content:space-between;align-items:center;padding:0 40px;gap:16px}
+.logo{display:flex;gap:12px;align-items:center}
+.badge{background:var(--primary);color:#fff;width:40px;height:40px;border-radius:8px;display:grid;place-items:center;font-size:22px}
+.logo h1{font-size:18px;font-weight:700}
+.logo small{display:block;margin-top:2px;font-size:11px;font-weight:500;color:var(--muted);text-transform:uppercase}
+.chip{display:flex;gap:10px;align-items:center;background:#f0f9ff;border:1px solid var(--primary);color:var(--primary);padding:8px 14px;border-radius:999px;font-size:13px;font-weight:600}
+main{padding:32px 40px;max-width:1300px;margin:0 auto;display:grid;grid-template-columns:420px 1fr;gap:24px;align-items:start}
+.card{background:#fff;border:1px solid var(--border);border-radius:12px;padding:24px}
+.title{display:flex;gap:10px;align-items:center;font-size:16px;font-weight:700;margin-bottom:16px}
+.title .i{color:var(--primary);font-size:18px}
+form{display:flex;flex-direction:column;gap:14px}
+.field{display:flex;flex-direction:column;gap:6px}
+.row{display:flex;gap:10px}.row>*{flex:1;min-width:0}
+label{font-size:13px;font-weight:600;color:var(--label)}
+input,select{height:40px;border:1px solid var(--border);border-radius:8px;padding:0 12px;font-size:14px;color:var(--ink);background:#fff;outline:none;width:100%;transition:.15s}
+input:focus,select:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(2,132,199,.15)}
+input:disabled{background:#f1f5f9;color:var(--muted)}
+.bad{border-color:var(--danger)!important}
+.mat{display:flex;gap:8px}
+.btn{display:flex;gap:8px;align-items:center;justify-content:center;height:40px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;border:1px solid var(--border);background:#fff;color:var(--label);padding:0 16px;transition:.15s;white-space:nowrap}
+.btn:hover{background:#f8fafc}
+.btn.p{background:var(--primary);border-color:var(--primary);color:#fff}.btn.p:hover{background:#0369a1}
+.btn.sm{height:32px;padding:0 12px;font-size:12px}
+.btn.r{color:var(--danger);border-color:#fecaca}.btn.r:hover{background:#fef2f2}
+.setores{border:1px solid var(--border);border-radius:8px;padding:12px;display:flex;flex-direction:column;gap:12px;background:#f8fafc}
+.grp b{font-size:12px;text-transform:uppercase;color:var(--label);display:block;margin-bottom:6px}
+.opts{display:flex;gap:8px;flex-wrap:wrap}
+.opt{display:flex;gap:8px;align-items:center;background:#fff;border:1px solid var(--border);border-radius:8px;padding:8px 12px;font-size:13px;cursor:pointer;font-weight:500}
+.opt input{width:16px;height:16px;accent-color:var(--primary)}
+.opt:has(input:checked){border-color:var(--primary);background:#f0f9ff;color:var(--primary);font-weight:600}
+.hint{font-size:12px;color:var(--muted)}
+.preview{font-size:12px;color:var(--label);background:#f0f9ff;border:1px dashed var(--primary);border-radius:8px;padding:10px 12px;line-height:1.5}
+.cred{display:none;background:#f0fdf4;border:1px solid #86efac;color:#166534;border-radius:8px;padding:12px 14px;font-size:13px;line-height:1.5}
+.cred.show{display:block}
+.tools{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap}
+.tools input{flex:1;min-width:180px}.tools select{width:190px}
+.tw{overflow:auto;border:1px solid var(--border);border-radius:8px}
+table{width:100%;border-collapse:collapse;min-width:680px}
+th{background:#f1f5f9;color:var(--label);font-size:12px;font-weight:700;text-align:left;padding:12px 14px;text-transform:uppercase}
+td{padding:12px 14px;font-size:13px;color:var(--label);border-bottom:1px solid var(--border);vertical-align:top}
+tr:last-child td{border-bottom:0}
+td b{color:var(--ink);font-size:14px;display:block}
+td small{color:var(--muted);font-size:11px}
+tr.off{opacity:.55}
+.tag{display:inline-block;font-size:11px;font-weight:600;padding:3px 9px;border-radius:999px;margin:0 4px 4px 0}
+.a-enfermagem{background:#e0f2fe;color:#0369a1}.a-medica{background:#d1fae5;color:#047857}.a-exames{background:#ede9fe;color:#6d28d9}
+.st{font-size:11px;font-weight:700;padding:3px 9px;border-radius:999px}
+.st.on{background:#d1fae5;color:#047857}.st.no{background:#fee2e2;color:#b91c1c}
+.acts{display:flex;gap:6px;flex-wrap:wrap}
+.empty{padding:32px;text-align:center;color:var(--muted);font-size:13px}
+#toast{position:fixed;bottom:24px;left:50%;transform:translate(-50%,20px);background:var(--ink);color:#fff;padding:14px 20px;border-radius:10px;font-size:14px;opacity:0;pointer-events:none;transition:.25s;max-width:calc(100% - 32px);z-index:9}
+#toast.show{opacity:1;transform:translate(-50%,0)}#toast.bad{background:#b91c1c}
+@media(max-width:1020px){main{grid-template-columns:1fr}}
+@media(max-width:640px){header{padding:0 16px}main{padding:16px}.logo h1{font-size:15px}.chip span{display:none}}
+</style>
+<script src="auth.js"></script>
+<script>DS.guard({admin:true})</script>
+</head>
+<body>
+<header>
+  <div class="logo"><div class="badge"><svg class="i" viewBox="0 0 24 24"><path d="M20 13c0 5-3.5 7.5-7.7 8.97a1 1 0 0 1-.6-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.2-2.7a1.2 1.2 0 0 1 1.6 0C14.5 3.8 17 5 19 5a1 1 0 0 1 1 1Z"/></svg></div>
+  <div><h1>Administração do Sistema</h1><small>Cadastro de funcionários e credenciais</small></div></div>
+  <div class="chip"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg><span>Administrador</span></div>
+</header>
+
+<main>
+  <section class="card">
+    <div class="title"><svg class="i" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6M22 11h-6"/></svg><span id="ftitle">Novo Funcionário</span></div>
+    <form id="f" novalidate>
+      <div class="field"><label for="nome">Nome completo</label><input id="nome" placeholder="Ex: Maria Silva" autocomplete="off"></div>
+      <div class="field"><label for="mat">Matrícula</label><div class="mat"><input id="mat" placeholder="Ex: 123456" autocomplete="off"><button type="button" class="btn" id="gen">Gerar</button></div></div>
+      <div class="row">
+        <div class="field"><label for="area">Área de atuação</label><select id="area"></select></div>
+        <div class="field"><label for="cargo">Cargo</label><select id="cargo"></select></div>
+      </div>
+      <div class="field"><label>Setores de atuação</label><div class="setores" id="setores"></div>
+        <span class="hint" id="shint"></span></div>
+      <div class="preview" id="preview"></div>
+      <div class="cred" id="cred"></div>
+      <button type="submit" class="btn p" id="save">Cadastrar Funcionário</button>
+      <button type="button" class="btn" id="cancel" hidden>Cancelar edição</button>
+    </form>
+  </section>
+
+  <section class="card">
+    <div class="title"><svg class="i" viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>Funcionários Cadastrados</div>
+    <div class="tools"><input id="q" placeholder="Buscar por nome ou matrícula..."><select id="fa"><option value="">Todas as áreas</option></select></div>
+    <div class="tw"><table><thead><tr><th>Funcionário</th><th>Cargo / Área</th><th>Setores liberados</th><th>Status</th><th>Ações</th></tr></thead><tbody id="tb"></tbody></table></div>
+  </section>
+</main>
+<div id="toast" role="status"></div>
+
+<script>
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const AREAS={
+  enfermagem:{nome:"Enfermagem",setores:["Triagem","Medicação"],cargos:["Enfermeiro(a)","Técnico(a) de Enfermagem"]},
+  medica:{nome:"Área Médica",setores:["Atendimento Médico","Prescrição","Reavaliação"],cargos:["Médico(a)"]},
+  exames:{nome:"Exames",setores:["Laboratório","Imagem"],cargos:["Biomédico(a)","Técnico(a) de Laboratório","Técnico(a) de Radiologia"]}
+};
+const MEDICO="Médico(a)";
+let staff=DS.staff();
+const save=()=>DS.saveStaff(staff);
+let editing=null,sel=new Set(),tt;
+function toast(m,bad){const t=$("#toast");t.textContent=m;t.className="show"+(bad?" bad":"");clearTimeout(tt);tt=setTimeout(()=>t.className="",3800)}
+
+const areaOpts=Object.entries(AREAS).map(([k,a])=>`<option value="${k}">${a.nome}</option>`).join("");
+$("#area").innerHTML=areaOpts;$("#fa").innerHTML+=areaOpts;
+
+function fillCargos(keep){
+  const a=$("#area").value;
+  $("#cargo").innerHTML=AREAS[a].cargos.map(c=>`<option>${c}</option>`).join("");
+  if(keep&&AREAS[a].cargos.includes(keep))$("#cargo").value=keep;
+}
+// Médico pode atuar em setores de qualquer área; os demais, só na própria área
+function allowed(){return $("#cargo").value===MEDICO?Object.keys(AREAS):[$("#area").value]}
+function renderSetores(){
+  const al=allowed();
+  sel=new Set([...sel].filter(k=>al.includes(k.split(":")[0])));
+  $("#setores").innerHTML=al.map(k=>`<div class="grp"><b>${AREAS[k].nome}</b><div class="opts">${AREAS[k].setores.map(s=>`<label class="opt"><input type="checkbox" value="${k}:${s}" ${sel.has(k+":"+s)?"checked":""}>${s}</label>`).join("")}</div></div>`).join("");
+  $("#shint").textContent=$("#cargo").value===MEDICO?"Médico: selecione os setores (de qualquer área) em que poderá atuar.":"Setores disponíveis apenas na área escolhida.";
+  updPreview();
+}
+function updPreview(){
+  const nome=$("#nome").value.trim()||"O funcionário";
+  $("#preview").innerHTML=sel.size?`<b>${esc(nome)}</b> terá acesso somente a: ${[...sel].map(k=>{const[a,s]=k.split(":");return `${AREAS[a].nome} › ${s}`}).join("; ")}. Qualquer outro setor ficará bloqueado.`:"Nenhum setor selecionado — sem acesso a nenhuma tela do sistema.";
+}
+$("#setores").addEventListener("change",e=>{e.target.checked?sel.add(e.target.value):sel.delete(e.target.value);updPreview()});
+$("#nome").addEventListener("input",updPreview);
+$("#area").onchange=()=>{sel.clear();fillCargos();renderSetores()};
+$("#cargo").onchange=renderSetores;
+$("#gen").onclick=()=>{let m;do{m=String(Math.floor(100000+Math.random()*900000))}while(staff.some(s=>s.mat===m));$("#mat").value=m;$("#mat").classList.remove("bad")};
+
+function resetForm(){
+  editing=null;sel.clear();$("#f").reset();$("#mat").disabled=false;$("#area").value="enfermagem";fillCargos();renderSetores();
+  $("#ftitle").textContent="Novo Funcionário";$("#save").textContent="Cadastrar Funcionário";$("#cancel").hidden=true;
+  document.querySelectorAll(".bad").forEach(x=>x.classList.remove("bad"));
+}
+$("#cancel").onclick=()=>{resetForm();$("#cred").classList.remove("show")};
+
+$("#f").addEventListener("submit",e=>{
+  e.preventDefault();
+  const nome=$("#nome").value.trim().replace(/\s+/g," "),mat=$("#mat").value.trim();
+  const okN=nome.split(" ").length>=2,okM=/^[A-Za-z0-9-]{3,15}$/.test(mat),dup=!editing&&staff.some(s=>s.mat.toLowerCase()===mat.toLowerCase());
+  $("#nome").classList.toggle("bad",!okN);$("#mat").classList.toggle("bad",!okM||dup);
+  if(!okN)return toast("Informe nome e sobrenome.",true);
+  if(!okM)return toast("Matrícula: 3 a 15 letras, números ou hífen.",true);
+  if(dup)return toast("Já existe um funcionário com essa matrícula.",true);
+  if(!sel.size)return toast("Selecione ao menos um setor de atuação.",true);
+  const d={nome,mat,area:$("#area").value,cargo:$("#cargo").value,setores:[...sel]};
+  if(editing){Object.assign(staff.find(s=>s.mat===editing),d);toast("Cadastro atualizado.");$("#cred").classList.remove("show")}
+  else{
+    const pw=String(Math.floor(100000+Math.random()*900000));
+    staff.push({...d,ativo:true,senha:pw});
+    $("#cred").innerHTML=`<b>${esc(nome)} cadastrado.</b><br>Matrícula: <b>${esc(mat)}</b> · Senha provisória: <b>${pw}</b><br>Anote agora: ela não será exibida novamente.`;
+    $("#cred").classList.add("show");toast("Funcionário cadastrado.");
+  }
+  save();const keep=$("#cred").classList.contains("show");resetForm();if(keep)$("#cred").classList.add("show");render();
+});
+
+function render(){
+  const q=$("#q").value.trim().toLowerCase(),fa=$("#fa").value;
+  const l=staff.filter(s=>(!fa||s.area===fa)&&(!q||s.nome.toLowerCase().includes(q)||s.mat.toLowerCase().includes(q)));
+  $("#tb").innerHTML=l.length?l.map(s=>`<tr class="${s.ativo?"":"off"}"><td><b>${esc(s.nome)}</b><small>Matrícula ${esc(s.mat)}</small></td><td>${esc(s.cargo)}<br><small>${AREAS[s.area].nome}</small></td><td>${s.setores.map(k=>{const[a,n]=k.split(":");return `<span class="tag a-${a}">${n}</span>`}).join("")}</td><td><span class="st ${s.ativo?"on":"no"}">${s.ativo?"Ativo":"Inativo"}</span></td><td><div class="acts"><button class="btn sm" data-e="${esc(s.mat)}">Editar</button><button class="btn sm r" data-t="${esc(s.mat)}">${s.ativo?"Desativar":"Reativar"}</button></div></td></tr>`).join(""):`<tr><td colspan="5" class="empty">Nenhum funcionário encontrado.</td></tr>`;
+}
+$("#q").oninput=render;$("#fa").onchange=render;
+$("#tb").addEventListener("click",e=>{
+  const ed=e.target.closest("[data-e]"),tg=e.target.closest("[data-t]");
+  if(ed){
+    const s=staff.find(x=>x.mat===ed.dataset.e);editing=s.mat;
+    $("#nome").value=s.nome;$("#mat").value=s.mat;$("#mat").disabled=true;$("#area").value=s.area;fillCargos(s.cargo);
+    sel=new Set(s.setores);renderSetores();
+    $("#ftitle").textContent="Editar Funcionário";$("#save").textContent="Salvar Alterações";$("#cancel").hidden=false;$("#cred").classList.remove("show");
+    window.scrollTo({top:0,behavior:"smooth"});
+  }
+  if(tg){
+    const s=staff.find(x=>x.mat===tg.dataset.t);
+    if(s.ativo&&!confirm(`Desativar ${s.nome}? O acesso ao sistema será bloqueado imediatamente.`))return;
+    s.ativo=!s.ativo;save();render();toast(s.ativo?`${s.nome} reativado.`:`${s.nome} desativado.`);
+  }
+});
+
+fillCargos();renderSetores();render();
+</script>
+</body>
+</html>

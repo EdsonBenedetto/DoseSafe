@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Prescrição Hospitalar - Medicação na Enfermaria</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--primary:#0284c7;--ink:#0f172a;--muted:#94a3b8;--label:#475569;--border:#e2e8f0;--danger:#ef4444}
+*{box-sizing:border-box;margin:0;padding:0;font-family:Geist,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+body{background:#f8fafc;color:var(--ink);min-height:100vh}
+svg.i{width:1em;height:1em;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+header{background:#fff;border-bottom:1px solid var(--border);height:72px;display:flex;justify-content:space-between;align-items:center;padding:0 40px;gap:16px}
+.logo{display:flex;gap:12px;align-items:center}
+.badge{background:var(--primary);color:#fff;width:40px;height:40px;border-radius:8px;display:grid;place-items:center;font-size:24px}
+.logo h1{font-size:18px;font-weight:700}
+.logo small{display:block;margin-top:2px;font-size:11px;font-weight:500;color:var(--muted);text-transform:uppercase}
+.user{display:flex;gap:16px;align-items:center;text-align:right}
+.user b{display:block;font-size:14px;font-weight:600}
+.user span{font-size:12px;color:var(--label)}
+.avatar{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#0284c7,#059669);color:#fff;display:grid;place-items:center;font-weight:600;font-size:15px}
+main{padding:40px;display:flex;flex-direction:column;gap:24px}
+.card{background:#fff;border:1px solid var(--border);border-radius:12px;padding:24px;box-shadow:0 4px 6px rgba(0,0,0,.03)}
+.title{display:flex;gap:10px;align-items:center;font-size:16px;font-weight:700}
+.title .i{color:var(--primary);font-size:18px}
+.sub{font-size:12px;color:var(--muted);font-weight:400;margin-left:auto}
+.hr{border:0;border-top:1px solid var(--border);margin:16px 0}
+.sum-top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.tags{display:flex;gap:10px;flex-wrap:wrap}
+.tag{font-size:12px;font-weight:700;text-transform:uppercase;padding:4px 10px;border-radius:6px;white-space:nowrap}
+.pdata{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:20px 32px}
+.pdata>div{display:flex;flex-direction:column;gap:4px}
+.pdata span{font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase}
+.pdata b{font-size:15px;font-weight:600}
+.warn{color:#b45309}
+.ws{display:grid;grid-template-columns:480px 1fr;gap:24px;align-items:start}
+.form{display:flex;flex-direction:column;gap:16px}
+.field{display:flex;flex-direction:column;gap:6px;position:relative;min-width:0}
+.row{display:flex;gap:12px}
+label{font-size:13px;font-weight:600;color:var(--label)}
+.ctl{display:flex;align-items:center;gap:8px;height:40px;border:1px solid var(--border);border-radius:8px;padding:0 12px;background:#fff;transition:.15s}
+.ctl:focus-within{border-color:var(--primary);box-shadow:0 0 0 3px rgba(2,132,199,.15)}
+.ctl.bad,.ta.bad{border-color:var(--danger)}
+.ctl input,.ctl select,textarea{border:0;outline:0;background:transparent;font-size:14px;color:var(--ink);width:100%;height:100%}
+.ctl select{appearance:none;cursor:pointer}
+.ctl input::placeholder,textarea::placeholder{color:var(--muted)}
+.ctl .i{color:var(--label);font-size:14px;pointer-events:none}
+.ctl .sfx{font-size:14px;font-weight:500;color:var(--label);white-space:nowrap}
+.ta{border:1px solid var(--border);border-radius:8px;padding:12px;height:80px;transition:.15s}
+.ta:focus-within{border-color:var(--primary);box-shadow:0 0 0 3px rgba(2,132,199,.15)}
+textarea{resize:none;font-family:inherit;line-height:1.35}
+.btn{display:flex;gap:8px;align-items:center;justify-content:center;height:44px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;border:1px solid var(--border);background:#fff;color:var(--label);padding:0 24px;transition:.15s}
+.btn:hover{background:#f8fafc}
+.btn.p{background:var(--primary);border-color:var(--primary);color:#fff;width:100%}
+.btn.p:hover{background:#0369a1}
+.btn.g{background:#10b981;border-color:#10b981;color:#fff}
+.btn.g:hover{background:#059669}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.link{background:none;border:0;color:var(--label);font-size:13px;font-weight:600;cursor:pointer;text-decoration:underline;align-self:center}
+.dd{position:absolute;top:70px;left:0;right:0;background:#fff;border:1px solid var(--border);border-radius:8px;box-shadow:0 10px 20px rgba(15,23,42,.1);max-height:220px;overflow:auto;z-index:5;display:none}
+.dd.open{display:block}
+.dd div{padding:9px 12px;font-size:14px;cursor:pointer}
+.dd div:hover,.dd div.act{background:#f0f9ff;color:var(--primary)}
+.dd small{color:var(--muted);font-size:12px;margin-left:6px}
+.right{display:flex;flex-direction:column;gap:24px;min-width:0}
+.tw{border:1px solid var(--border);border-radius:8px;overflow:auto}
+table{width:100%;border-collapse:collapse;min-width:620px}
+th{background:#f1f5f9;color:var(--label);font-size:12px;font-weight:700;text-align:left;padding:12px 16px;text-transform:uppercase}
+td{padding:14px 16px;font-size:13px;color:var(--label);border-bottom:1px solid var(--border);vertical-align:middle}
+tr:last-child td{border-bottom:0}
+td.n{font-weight:600;color:var(--ink)}
+td.n small{display:block;font-weight:400;color:var(--muted);font-size:11px;margin-top:2px}
+th:last-child,td:last-child{text-align:right;white-space:nowrap}
+tr.off td{opacity:.5;text-decoration:line-through}
+tr.off td:last-child{text-decoration:none}
+tr.editing td{background:#f0f9ff}
+.ib{width:28px;height:28px;border-radius:6px;border:0;cursor:pointer;display:inline-grid;place-items:center;margin-left:8px;font-size:14px;transition:.15s}
+.ib.e{background:#f8fafc;color:var(--ink)}.ib.e:hover{background:#e2e8f0}
+.ib.x{background:#fef2f2;color:var(--danger)}.ib.x:hover{background:#fee2e2}
+.ib:disabled{opacity:.35;cursor:not-allowed}
+.empty{padding:28px 16px;text-align:center;color:var(--muted);font-size:13px}
+.pill{display:inline-block;font-size:11px;font-weight:700;padding:3px 9px;border-radius:999px;white-space:nowrap;text-decoration:none}
+.p-draft{background:#f1f5f9;color:var(--label)}.p-sent{background:#e0f2fe;color:#0369a1}.p-off{background:#fee2e2;color:#b91c1c}
+.p-pend{background:#fef9c3;color:#854d0e}.p-late{background:#fee2e2;color:#b91c1c}.p-ok{background:#d1fae5;color:#047857}.p-sos{background:#ede9fe;color:#6d28d9}.p-wait{background:#f1f5f9;color:var(--label)}
+.tl{display:flex;flex-direction:column}
+.dose{display:grid;grid-template-columns:110px 1fr auto auto;gap:14px;align-items:center;padding:12px 4px;border-bottom:1px solid var(--border)}
+.dose:last-child{border-bottom:0}
+.dose .t{font-weight:700;font-size:14px}
+.dose .t small{display:block;font-weight:500;font-size:11px;color:var(--muted)}
+.dose .m b{font-size:14px;font-weight:600}
+.dose .m small{display:block;font-size:12px;color:var(--label);margin-top:2px}
+.btn.s{height:34px;padding:0 14px;font-size:13px;background:#f0f9ff;border-color:var(--primary);color:var(--primary)}
+.btn.s:hover{background:#e0f2fe}
+.legend{display:flex;gap:6px;align-items:center;font-size:12px;color:var(--muted);margin-top:16px}
+.legend .i{font-size:14px}
+footer{border-top:1px solid var(--border);padding-top:24px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+#toast{position:fixed;bottom:24px;left:50%;transform:translate(-50%,20px);background:var(--ink);color:#fff;padding:14px 20px;border-radius:10px;font-size:14px;opacity:0;pointer-events:none;transition:.25s;max-width:calc(100% - 32px);box-shadow:0 10px 25px rgba(0,0,0,.25);z-index:9}
+#toast.show{opacity:1;transform:translate(-50%,0)}
+#toast.bad{background:#b91c1c}
+@media(max-width:1020px){.ws{grid-template-columns:1fr}}
+@media(max-width:640px){header{padding:0 16px}main{padding:16px}.user div{display:none}.logo h1{font-size:15px}.dose{grid-template-columns:1fr auto}.dose .t{grid-column:1/-1}footer .btn{width:100%}.row{flex-direction:column}.row .field{width:100%!important}}
+</style>
+<script src="auth.js"></script>
+<script>DS.guard({setor:"medica:Prescrição"})</script>
+</head>
+<body>
+<header>
+  <div class="logo">
+    <div class="badge"><svg class="i" viewBox="0 0 24 24"><path d="M11 2a2 2 0 0 0-2 2v5H4a2 2 0 0 0-2 2v2c0 1.1.9 2 2 2h5v5c0 1.1.9 2 2 2h2a2 2 0 0 0 2-2v-5h5a2 2 0 0 0 2-2v-2a2 2 0 0 0-2-2h-5V4a2 2 0 0 0-2-2Z"/></svg></div>
+    <div><h1>Sistema Hospitalar</h1><small>Prescrição Hospitalar · Enfermaria</small></div>
+  </div>
+  <div class="user"><div><b>Dr. Carlos Mendes</b><span>CRM 123456-SP — Clínico Geral</span></div><div class="avatar">CM</div></div>
+</header>
+
+<main>
+  <section class="card">
+    <div class="sum-top">
+      <div class="title"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="10" r="3"/><path d="M7 20.7a7 7 0 0 1 10 0"/></svg>Paciente em Atendimento</div>
+      <div class="tags"><span class="tag" style="background:#fef08a;color:#854d0e">Amarelo — Urgente</span><span class="tag" style="background:#e0f2fe;color:#0369a1">Em Medicação</span></div>
+    </div>
+    <hr class="hr">
+    <div class="pdata">
+      <div><span>Nome do Paciente</span><b>João da Silva Santos</b></div>
+      <div><span>Local de Administração</span><b>Enfermaria 02 — Leito 04</b></div>
+      <div><span>CPF</span><b>123.456.789-00</b></div>
+      <div><span>Data de Nascimento</span><b id="nasc"></b></div>
+      <div><span>Nº Prontuário</span><b>#854.291-A</b></div>
+      <div><span>Alergias</span><b class="warn">Nenhuma registrada — confirmar</b></div>
+    </div>
+  </section>
+
+  <div class="ws">
+    <form class="card form" id="f" novalidate>
+      <div class="title"><svg class="i" viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 2v2M12 2v2M16 2v2M8 10h8M8 14h8M8 18h5"/></svg><span id="ftitle">Nova Prescrição Hospitalar</span></div>
+      <hr class="hr" style="margin:-4px 0 0">
+
+      <div class="field"><label for="med">Medicamento</label>
+        <div class="ctl" id="cmed"><input id="med" type="text" placeholder="Buscar medicamento..." autocomplete="off" role="combobox" aria-expanded="false" aria-controls="dd"><svg class="i" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></div>
+        <div class="dd" id="dd" role="listbox"></div>
+      </div>
+
+      <div class="row">
+        <div class="field" style="width:180px"><label for="dose">Dose</label><div class="ctl" id="cdose"><input id="dose" type="number" min="0" step="any" inputmode="decimal" placeholder="Ex: 500"></div></div>
+        <div class="field" style="flex:1"><label for="un">Unidade de Medida</label><div class="ctl"><select id="un"><option>mg</option><option>g</option><option>mcg</option><option>mL</option><option>UI</option><option>comprimido(s)</option><option>gota(s)</option></select><svg class="i" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></div></div>
+      </div>
+
+      <div class="field"><label for="via">Via de Administração</label><div class="ctl"><select id="via"><option value="EV">Endovenosa (EV)</option><option value="VO">Via Oral (VO)</option><option value="IM">Intramuscular (IM)</option><option value="SC">Subcutânea (SC)</option><option value="SL">Sublingual (SL)</option><option value="INAL">Inalatória</option><option value="TOP">Tópica</option></select><svg class="i" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></div></div>
+
+      <div class="field"><label for="freq">Frequência de Administração</label><div class="ctl"><select id="freq"><option value="int">Intervalo fixo (de X em X horas)</option><option value="unica">Dose única na enfermaria</option><option value="sos">Se necessário (SOS / ACM)</option></select><svg class="i" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></div></div>
+
+      <div class="field" id="gint"><label for="int">Intervalo</label><div class="ctl" id="cint"><input id="int" type="number" min="1" max="72" step="1" inputmode="numeric" placeholder="Ex: 8"><span class="sfx">em ___ horas</span></div></div>
+      <div class="field" id="gfirst"><label for="first">Horário da 1ª dose</label><div class="ctl" id="cfirst"><input id="first" type="datetime-local"></div></div>
+
+      <div class="field"><label for="obs">Observações (Opcional)</label><div class="ta"><textarea id="obs" maxlength="300" placeholder="Digite observações de diluição, velocidade de infusão, etc..."></textarea></div></div>
+
+      <button type="submit" class="btn p" id="add"><svg class="i" viewBox="0 0 24 24" style="font-size:16px"><path d="M5 12h14M12 5v14"/></svg><span>Adicionar Prescrição</span></button>
+      <button type="button" class="link" id="cancelEdit" hidden>Cancelar edição</button>
+    </form>
+
+    <div class="right">
+      <section class="card">
+        <div class="title"><svg class="i" viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>Prescrições do Atendimento</div>
+        <hr class="hr">
+        <div class="tw"><table><thead><tr><th>Medicamento</th><th style="width:120px">Dose / Via</th><th style="width:120px">Frequência</th><th style="width:120px">Situação</th><th style="width:100px">Ações</th></tr></thead><tbody id="tb"></tbody></table></div>
+        <div class="legend"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>Após enviar, a equipe de enfermagem administra a medicação no leito do paciente e registra cada dose.</div>
+      </section>
+
+      <section class="card">
+        <div class="title"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>Checagem de Enfermagem — Próximas 24 h<span class="sub">Visão da enfermaria</span></div>
+        <hr class="hr">
+        <div class="tl" id="tl"></div>
+      </section>
+    </div>
+  </div>
+
+  <footer>
+    <button class="btn" id="voltar" type="button"><svg class="i" viewBox="0 0 24 24" style="font-size:16px"><path d="m12 19-7-7 7-7M19 12H5"/></svg>Voltar ao Painel</button>
+    <button class="btn g" id="send" type="button"><svg class="i" viewBox="0 0 24 24" style="font-size:16px"><path d="m22 2-7 20-4-9-9-4ZM22 2 11 13"/></svg>Enviar à Enfermaria</button>
+  </footer>
+</main>
+<div id="toast" role="status"></div>
+
+<script>
+const $=s=>document.querySelector(s);
+const MEDS=["Dipirona Sódica","Paracetamol","Ibuprofeno","Omeprazol","Ondansetrona","Metoclopramida","Ceftriaxona","Amoxicilina","Ciprofloxacino","Dexametasona","Hidrocortisona","Furosemida","Captopril","Losartana","Metformina","Insulina Regular","Salbutamol","Morfina","Tramadol","Cetorolaco","Buscopan (Escopolamina)","Soro Fisiológico 0,9%","Ringer Lactato"];
+const ENFERMEIRA="Enf. Maria Silva";
+const p2=n=>String(n).padStart(2,"0");
+const fmt=d=>`${p2(d.getDate())}/${p2(d.getMonth()+1)} ${p2(d.getHours())}:${p2(d.getMinutes())}`;
+const fmtL=d=>`${d.getFullYear()}-${p2(d.getMonth()+1)}-${p2(d.getDate())}T${p2(d.getHours())}:${p2(d.getMinutes())}`;
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const nowRound=()=>{const d=new Date();d.setSeconds(0,0);d.setMinutes(Math.ceil(d.getMinutes()/5)*5);return d};
+const FREQ={int:"Intervalo fixo",unica:"Dose única",sos:"Se necessário"};
+
+function mkDoses(r){
+  if(r.freq==="sos")return [];
+  const out=[],base=r.first.getTime();
+  if(r.freq==="unica")return [{t:new Date(base),adm:null}];
+  for(let k=0;k*r.int<24;k++)out.push({t:new Date(base+k*r.int*3600000),adm:null});
+  return out;
+}
+const f0=nowRound();
+let rx=[
+  {id:1,med:"Dipirona Sódica",dose:500,un:"mg",via:"EV",freq:"int",int:6,first:new Date(f0),obs:"",sent:false,susp:false,sos:[]},
+  {id:2,med:"Omeprazol",dose:40,un:"mg",via:"EV",freq:"int",int:24,first:new Date(f0),obs:"",sent:false,susp:false,sos:[]},
+  {id:3,med:"Ondansetrona",dose:4,un:"mg",via:"EV",freq:"int",int:8,first:new Date(f0),obs:"",sent:false,susp:false,sos:[]}];
+rx.forEach(r=>r.doses=mkDoses(r));
+let nextId=4,editId=null;
+
+(()=>{const b=new Date(1985,2,15),n=new Date();let a=n.getFullYear()-b.getFullYear();if(n<new Date(n.getFullYear(),2,15))a--;$("#nasc").textContent=`15/03/1985 (${a} anos)`})();
+
+let tt;function toast(m,bad){const t=$("#toast");t.textContent=m;t.className="show"+(bad?" bad":"");clearTimeout(tt);tt=setTimeout(()=>t.className="",3800)}
+const used=r=>r.doses.some(d=>d.adm)||r.sos.length>0;
+const freqTxt=r=>r.freq==="int"?`${r.int}/${r.int}h`:FREQ[r.freq];
+
+function render(){
+  $("#tb").innerHTML=rx.length?rx.map(r=>{
+    const st=r.susp?'<span class="pill p-off">Suspensa</span>':r.sent?'<span class="pill p-sent">Enviada</span>':'<span class="pill p-draft">Aguardando envio</span>';
+    const lock=r.susp||used(r);
+    return `<tr class="${r.susp?"off ":""}${r.id===editId?"editing":""}"><td class="n">${esc(r.med)}${r.obs?`<small>${esc(r.obs)}</small>`:""}</td><td>${r.dose} ${esc(r.un)} · ${r.via}</td><td>${freqTxt(r)}</td><td style="text-decoration:none">${st}</td><td><button class="ib e" data-e="${r.id}" aria-label="Editar ${esc(r.med)}" ${lock?"disabled":""} title="${used(r)?"Já há doses administradas":"Editar"}"><svg class="i" viewBox="0 0 24 24"><path d="M21.2 5.6 18.4 2.8a2 2 0 0 0-2.8 0L3 15.4V21h5.6L21.2 8.4a2 2 0 0 0 0-2.8ZM15 5l4 4"/></svg></button><button class="ib x" data-x="${r.id}" aria-label="Suspender ${esc(r.med)}" ${r.susp?"disabled":""} title="Suspender"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m4.9 4.9 14.2 14.2"/></svg></button></td></tr>`}).join(""):`<tr><td colspan="5" class="empty">Nenhuma prescrição adicionada neste atendimento.</td></tr>`;
+  renderTL();
+}
+
+function renderTL(){
+  const now=new Date(),items=[];
+  rx.filter(r=>!r.susp).forEach(r=>{
+    r.doses.forEach((d,i)=>items.push({r,d,i,t:d.t}));
+    if(r.freq==="sos")items.push({r,sos:true,t:new Date(8.64e15)});
+  });
+  items.sort((a,b)=>a.t-b.t);
+  $("#tl").innerHTML=items.length?items.map(o=>{
+    const r=o.r,desc=`${r.dose} ${esc(r.un)} · ${r.via}${r.obs?" · "+esc(r.obs):""}`;
+    if(o.sos){
+      const last=r.sos.length?`Última: ${fmt(r.sos[r.sos.length-1])} · ${r.sos.length} dose(s) hoje`:"Nenhuma dose registrada";
+      return `<div class="dose"><div class="t">SOS<small>Se necessário</small></div><div class="m"><b>${esc(r.med)}</b><small>${desc} · ${last}</small></div><span class="pill p-sos">Sob demanda</span><button class="btn s" data-sos="${r.id}" ${r.sent?"":"disabled"}>Registrar administração</button></div>`}
+    const d=o.d;let pill,btn;
+    if(d.adm){pill=`<span class="pill p-ok">Administrada ${fmt(d.adm).slice(-5)}</span>`;btn=`<span style="width:150px"></span>`}
+    else if(!r.sent){pill='<span class="pill p-wait">Aguardando envio</span>';btn=`<button class="btn s" disabled>Registrar administração</button>`}
+    else{const late=now-d.t>30*60000;pill=late?'<span class="pill p-late">Atrasada</span>':'<span class="pill p-pend">Pendente</span>';btn=`<button class="btn s" data-adm="${r.id}:${o.i}">Registrar administração</button>`}
+    const day=d.t.toDateString()===now.toDateString()?"Hoje":fmt(d.t).slice(0,5);
+    return `<div class="dose"><div class="t">${p2(d.t.getHours())}:${p2(d.t.getMinutes())}<small>${day}</small></div><div class="m"><b>${esc(r.med)}</b><small>${desc}</small></div>${pill}${btn}</div>`;
+  }).join(""):`<div class="empty">Nenhuma dose programada. Adicione prescrições e envie à enfermaria.</div>`;
+}
+
+// Combobox de medicamento
+const med=$("#med"),dd=$("#dd");let act=-1;
+function showDD(){
+  const q=med.value.trim().toLowerCase();
+  const l=MEDS.filter(m=>m.toLowerCase().includes(q)).slice(0,30);
+  let h=l.map((m,i)=>`<div role="option" data-v="${esc(m)}" class="${i===act?"act":""}">${esc(m)}</div>`).join("");
+  if(q&&!MEDS.some(m=>m.toLowerCase()===q))h+=`<div role="option" data-v="${esc(med.value.trim())}">Usar “${esc(med.value.trim())}”<small>(digitado)</small></div>`;
+  dd.innerHTML=h||`<div style="color:var(--muted);cursor:default">Sem resultados</div>`;
+  dd.classList.add("open");med.setAttribute("aria-expanded","true");
+}
+function hideDD(){dd.classList.remove("open");med.setAttribute("aria-expanded","false");act=-1}
+med.addEventListener("focus",showDD);
+med.addEventListener("input",()=>{act=-1;showDD();$("#cmed").classList.remove("bad")});
+med.addEventListener("keydown",e=>{
+  const o=[...dd.querySelectorAll("[data-v]")];
+  if(e.key==="ArrowDown"){e.preventDefault();act=Math.min(act+1,o.length-1);showDD()}
+  else if(e.key==="ArrowUp"){e.preventDefault();act=Math.max(act-1,0);showDD()}
+  else if(e.key==="Enter"&&dd.classList.contains("open")&&act>=0){e.preventDefault();med.value=o[act].dataset.v;hideDD();$("#dose").focus()}
+  else if(e.key==="Escape")hideDD();
+});
+dd.addEventListener("mousedown",e=>{const o=e.target.closest("[data-v]");if(!o)return;e.preventDefault();med.value=o.dataset.v;hideDD();$("#cmed").classList.remove("bad");$("#dose").focus()});
+med.addEventListener("blur",()=>setTimeout(hideDD,120));
+
+function syncFreq(){const v=$("#freq").value;$("#gint").hidden=v!=="int";$("#gfirst").hidden=v==="sos"}
+$("#freq").onchange=syncFreq;
+
+function resetForm(){$("#f").reset();$("#via").value="EV";editId=null;$("#ftitle").textContent="Nova Prescrição Hospitalar";$("#add span").textContent="Adicionar Prescrição";$("#cancelEdit").hidden=true;document.querySelectorAll(".bad").forEach(x=>x.classList.remove("bad"));$("#first").value=fmtL(nowRound());syncFreq();render()}
+
+$("#f").addEventListener("submit",e=>{
+  e.preventDefault();
+  const m=med.value.trim(),dose=parseFloat($("#dose").value),fr=$("#freq").value,iv=parseInt($("#int").value,10),fs=$("#first").value?new Date($("#first").value):null;
+  const okM=m.length>=2,okD=dose>0&&isFinite(dose),okI=fr!=="int"||(iv>=1&&iv<=72),okF=fr==="sos"||(fs&&!isNaN(fs));
+  $("#cmed").classList.toggle("bad",!okM);$("#cdose").classList.toggle("bad",!okD);$("#cint").classList.toggle("bad",!okI);$("#cfirst").classList.toggle("bad",!okF);
+  if(!okM)return toast("Informe o medicamento.",true);
+  if(!okD)return toast("Informe uma dose maior que zero.",true);
+  if(!okI)return toast("O intervalo deve ficar entre 1 e 72 horas.",true);
+  if(!okF)return toast("Informe o horário da 1ª dose.",true);
+  const dup=rx.some(r=>r.id!==editId&&!r.susp&&r.med.toLowerCase()===m.toLowerCase());
+  if(dup&&!confirm(`“${m}” já está prescrito e ativo neste atendimento. Deseja adicionar mesmo assim?`))return;
+  const item={med:m,dose,un:$("#un").value,via:$("#via").value,freq:fr,int:fr==="int"?iv:null,first:fr==="sos"?null:fs,obs:$("#obs").value.trim()};
+  if(editId){const r=rx.find(x=>x.id===editId);Object.assign(r,item,{sent:false});r.doses=mkDoses(r);toast("Prescrição atualizada. Reenvie à enfermaria.")}
+  else{const r={id:nextId++,...item,sent:false,susp:false,sos:[]};r.doses=mkDoses(r);rx.push(r);toast("Prescrição adicionada.")}
+  resetForm();
+});
+
+$("#tb").addEventListener("click",e=>{
+  const ed=e.target.closest("[data-e]"),dl=e.target.closest("[data-x]");
+  if(ed){const r=rx.find(x=>x.id==ed.dataset.e);editId=r.id;med.value=r.med;$("#dose").value=r.dose;$("#un").value=r.un;$("#via").value=r.via;$("#freq").value=r.freq;$("#int").value=r.int||"";$("#first").value=r.first?fmtL(r.first):fmtL(nowRound());$("#obs").value=r.obs;syncFreq();
+    $("#ftitle").textContent="Editar Prescrição";$("#add span").textContent="Salvar Alteração";$("#cancelEdit").hidden=false;render();med.focus();hideDD()}
+  if(dl){const r=rx.find(x=>x.id==dl.dataset.x);if(!confirm(`Suspender “${r.med}”? As doses pendentes serão canceladas e a suspensão não pode ser desfeita.`))return;r.susp=true;if(editId===r.id)resetForm();else render();toast("Prescrição suspensa.")}
+});
+$("#cancelEdit").onclick=resetForm;
+
+function checagem(r,horario){
+  return confirm(`CONFIRA ANTES DE ADMINISTRAR\n\nPaciente: João da Silva Santos — Enfermaria 02, Leito 04\nMedicamento: ${r.med}\nDose: ${r.dose} ${r.un}\nVia: ${r.via}\nHorário: ${horario}\n\nO paciente foi identificado (pulseira) e as alergias foram verificadas?\nConfirmar administração por ${ENFERMEIRA}?`);
+}
+$("#tl").addEventListener("click",e=>{
+  const a=e.target.closest("[data-adm]"),s=e.target.closest("[data-sos]");
+  if(a){const [id,i]=a.dataset.adm.split(":").map(Number);const r=rx.find(x=>x.id===id),d=r.doses[i];if(!checagem(r,fmt(d.t)))return;d.adm=new Date();renderAll();toast(`${r.med} administrada às ${p2(d.adm.getHours())}:${p2(d.adm.getMinutes())} (${ENFERMEIRA}).`)}
+  if(s){const r=rx.find(x=>x.id==s.dataset.sos);if(!checagem(r,"Se necessário (agora)"))return;r.sos.push(new Date());renderAll();toast(`${r.med} (SOS) registrada.`)}
+});
+function renderAll(){render()}
+
+$("#send").onclick=()=>{
+  const pend=rx.filter(r=>!r.sent&&!r.susp);
+  if(!pend.length)return toast("Não há prescrições novas para enviar.",true);
+  if(!confirm(`Enviar ${pend.length} prescrição(ões) à enfermaria? A equipe passará a ver os horários de administração.`))return;
+  pend.forEach(r=>r.sent=true);
+  console.log("Prescrição enviada à enfermaria:",{paciente:"João da Silva Santos",leito:"Enfermaria 02 — Leito 04",medico:"Dr. Carlos Mendes — CRM 123456-SP",prescricoes:pend,enviadoEm:new Date().toISOString()}); // envie para sua API aqui
+  render();toast("Prescrição enviada à enfermaria. Horários liberados para checagem.");
+};
+$("#voltar").onclick=()=>{if((rx.some(r=>!r.sent&&!r.susp)||med.value)&&!confirm("Existem prescrições não enviadas. Voltar ao painel mesmo assim?"))return;toast("Voltando ao painel (simulado).")};
+
+$("#first").value=fmtL(nowRound());syncFreq();render();
+setInterval(renderTL,60000);
+</script>
+</body>
+</html>

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DoseSafe - Início</title>
+<script src="auth.js"></script>
+<script>DS.guard({any:true})</script>
+<style>
+:root{--primary:#0284c7;--ink:#0f172a;--muted:#94a3b8;--label:#475569;--border:#e2e8f0}
+*{box-sizing:border-box;margin:0;padding:0;font-family:Geist,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+body{background:#f8fafc;color:var(--ink);min-height:100vh}
+header{background:#fff;border-bottom:1px solid var(--border);height:72px;display:flex;align-items:center;padding:0 40px}
+h1{font-size:18px;font-weight:700}
+main{max-width:900px;margin:0 auto;padding:40px 24px 90px}
+h2{font-size:22px;margin-bottom:4px}
+.sub{font-size:14px;color:var(--label);margin-bottom:12px}
+.tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:28px}
+.tag{font-size:11px;font-weight:600;background:#e0f2fe;color:#0369a1;padding:3px 10px;border-radius:999px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px}
+a.card{background:#fff;border:1px solid var(--border);border-radius:12px;padding:20px;text-decoration:none;color:inherit;transition:.15s;display:block}
+a.card:hover{border-color:var(--primary);box-shadow:0 2px 8px rgba(2,132,199,.1)}
+a.card b{font-size:15px;display:block;margin-bottom:6px}
+a.card span{font-size:13px;color:var(--label)}
+.empty{background:#fff;border:1px dashed var(--border);border-radius:12px;padding:32px;text-align:center;color:var(--muted);font-size:14px}
+@media(max-width:640px){header{padding:0 16px}}
+</style>
+</head>
+<body>
+<header><h1>DoseSafe · Início</h1></header>
+<main>
+  <h2 id="ola"></h2>
+  <p class="sub" id="cargo"></p>
+  <div class="tags" id="tags"></div>
+  <div class="grid" id="grid"></div>
+</main>
+<script>
+const u=DS.session();
+if(u){
+  document.getElementById("ola").textContent="Olá, "+u.nome;
+  document.getElementById("cargo").textContent=u.cargo+" · matrícula "+u.mat;
+  document.getElementById("tags").innerHTML=u.admin?'<span class="tag">Acesso administrativo</span>':u.setores.map(s=>'<span class="tag"></span>').join("");
+  if(!u.admin)document.querySelectorAll("#tags .tag").forEach((t,i)=>t.textContent=u.setores[i].replace(":"," › "));
+  const l=DS.PAGES.filter(p=>DS.can(u,p));
+  document.getElementById("grid").innerHTML=l.length?l.map(p=>'<a class="card" href="'+p.f+'"><b>'+p.n+'</b><span>'+p.d+'</span></a>').join(""):'<div class="empty">Nenhuma tela liberada para o seu cadastro. Fale com o administrador.</div>';
+}
+</script>
+</body>
+</html>

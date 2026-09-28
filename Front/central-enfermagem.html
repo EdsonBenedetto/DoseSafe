@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Central de Enfermagem - Pronto Atendimento</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--primary:#0284c7;--ink:#0f172a;--muted:#94a3b8;--label:#475569;--border:#e2e8f0;--danger:#ef4444}
+*{box-sizing:border-box;margin:0;padding:0;font-family:Geist,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+body{background:#f8fafc;color:var(--ink);min-height:100vh}
+svg.i{width:1em;height:1em;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+header{background:#fff;border-bottom:1px solid var(--border);height:72px;display:flex;justify-content:space-between;align-items:center;padding:0 40px;gap:16px}
+.logo{display:flex;gap:12px;align-items:center}
+.badge{background:var(--primary);color:#fff;width:40px;height:40px;border-radius:8px;display:grid;place-items:center;font-size:22px}
+.logo h1{font-size:18px;font-weight:700}
+.logo small{display:block;margin-top:2px;font-size:11px;font-weight:500;color:var(--muted);text-transform:uppercase}
+.session{display:flex;gap:12px;align-items:center}
+.idchip{display:flex;gap:10px;align-items:center;background:#f0f9ff;border:1px solid var(--primary);color:var(--primary);padding:8px 14px;border-radius:999px;font-size:13px;font-weight:600}
+.avmini{width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,#0284c7,#059669);color:#fff;display:grid;place-items:center;font-weight:700;font-size:11px;flex-shrink:0}
+.linkbtn{background:none;border:0;color:var(--label);font-size:12px;font-weight:600;cursor:pointer;text-decoration:underline}
+main{padding:32px 40px;display:flex;flex-direction:column;gap:28px;max-width:1200px;margin:0 auto}
+.tabs{display:flex;gap:8px;border-bottom:1px solid var(--border)}
+.tab{padding:10px 4px;font-size:14px;font-weight:600;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;display:flex;gap:8px;align-items:center;margin-right:20px}
+.tab.act{color:var(--primary);border-color:var(--primary)}
+.tab .n{background:#f1f5f9;color:var(--label);font-size:11px;font-weight:700;padding:1px 8px;border-radius:999px}
+.tab.act .n{background:#e0f2fe;color:var(--primary)}
+.pageh{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+.pageh h2{font-size:20px;font-weight:700}
+.pageh p{font-size:13px;color:var(--muted);margin-top:2px}
+.pill{display:inline-block;font-size:11px;font-weight:700;padding:3px 10px;border-radius:999px;white-space:nowrap;text-transform:uppercase}
+.r-red{background:#fee2e2;color:#b91c1c}.r-orange{background:#ffedd5;color:#9a3412}.r-yellow{background:#fef9c3;color:#854d0e}.r-green{background:#dcfce7;color:#166534}.r-blue{background:#dbeafe;color:#1e40af}
+.queue{display:flex;flex-direction:column;gap:12px}
+.pcard{background:#fff;border:1px solid var(--border);border-radius:12px;padding:18px 22px;display:flex;align-items:center;gap:18px;flex-wrap:wrap;cursor:pointer;transition:.15s}
+.pcard:hover{border-color:var(--primary);box-shadow:0 2px 8px rgba(2,132,199,.08)}
+.pcard.urgent{border-color:#fca5a5;box-shadow:0 0 0 3px rgba(239,68,68,.06)}
+.pcard.wait{cursor:default}
+.pcard.wait:hover{border-color:var(--border);box-shadow:none}
+.pav{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#0284c7,#059669);color:#fff;display:grid;place-items:center;font-weight:700;font-size:15px;flex-shrink:0}
+.pinfo{flex:1;min-width:200px}
+.pinfo b{font-size:15px;font-weight:700}
+.pinfo span{display:block;font-size:12px;color:var(--muted);margin-top:2px}
+.pmeta{display:flex;gap:20px;align-items:center;flex-wrap:wrap}
+.mcol{display:flex;flex-direction:column;gap:2px;min-width:90px}
+.mcol span{font-size:11px;color:var(--muted);text-transform:uppercase;font-weight:600}
+.mcol b{font-size:13px}
+.mcol b.late{color:var(--danger)}
+.btn{display:flex;gap:8px;align-items:center;justify-content:center;height:42px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;border:1px solid var(--border);background:#fff;color:var(--label);padding:0 20px;transition:.15s;white-space:nowrap}
+.btn:hover{background:#f8fafc}
+.btn.p{background:var(--primary);border-color:var(--primary);color:#fff}
+.btn.p:hover{background:#0369a1}
+.btn.g{background:#10b981;border-color:#10b981;color:#fff}
+.btn.g:hover{background:#059669}
+.btn.r{background:#fff;border-color:var(--danger);color:var(--danger)}
+.btn.r:hover{background:#fef2f2}
+.btn.sm{height:36px;padding:0 14px;font-size:13px}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.empty{padding:48px 16px;text-align:center;color:var(--muted);font-size:14px;background:#fff;border:1px dashed var(--border);border-radius:12px}
+/* Modal usuário */
+.ov{position:fixed;inset:0;background:rgba(15,23,42,.55);display:none;align-items:center;justify-content:center;padding:20px;z-index:20}
+.ov.open{display:flex}
+.modal{background:#fff;border-radius:16px;padding:28px;width:100%;max-width:380px;display:flex;flex-direction:column;gap:14px}
+.modal h3{font-size:16px;font-weight:700;display:flex;gap:8px;align-items:center}
+.modal h3 .i{color:var(--primary)}
+.modal p.hint2{font-size:12px;color:var(--muted)}
+.ulist{display:flex;flex-direction:column;gap:8px}
+.uopt{display:flex;align-items:center;gap:10px;border:1px solid var(--border);border-radius:8px;padding:10px 12px;cursor:pointer;transition:.15s}
+.uopt:hover{border-color:var(--primary);background:#f0f9ff}
+.uopt b{font-size:13px;display:block}
+.uopt span{font-size:11px;color:var(--muted)}
+.mactions{display:flex;gap:10px;justify-content:flex-end}
+/* Checklist view */
+.card{background:#fff;border:1px solid var(--border);border-radius:12px;padding:24px}
+.pdata{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:16px 28px}
+.pdata>div{display:flex;flex-direction:column;gap:4px}
+.pdata span{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase}
+.pdata b{font-size:14px;font-weight:600}
+.warn{color:#b45309}
+.sectitle{display:flex;gap:10px;align-items:center;font-size:15px;font-weight:700;margin-bottom:14px}
+.sectitle .i{color:var(--primary)}
+.medgroup{border:1px solid var(--border);border-radius:10px;margin-bottom:14px;overflow:hidden}
+.medhead{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 16px;background:#f8fafc;flex-wrap:wrap}
+.medhead b{font-size:14px}
+.medhead small{display:block;color:var(--muted);font-size:12px;margin-top:2px}
+.medalert{background:#fef2f2;border-top:1px solid #fecaca;color:#991b1b;padding:8px 16px;font-size:12px;display:flex;gap:8px;align-items:center}
+.medactions{display:flex;gap:8px;align-items:center;flex-shrink:0}
+.status{font-size:11px;font-weight:700;padding:3px 9px;border-radius:999px;white-space:nowrap}
+.s-pend{background:#f1f5f9;color:var(--label)}.s-off{background:#fee2e2;color:#b91c1c}.s-ok{background:#d1fae5;color:#047857}
+.donebox{padding:8px 16px 12px;font-size:12px;color:var(--muted)}
+.footerbar{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-top:8px;padding-top:16px;border-top:1px solid var(--border)}
+.progress{font-size:13px;color:var(--label)}
+.rodada{font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;margin-left:8px}
+/* Reavaliação */
+.reav-card{background:#fff;border:1px solid var(--border);border-radius:12px;padding:20px 22px;display:flex;flex-direction:column;gap:14px}
+.reav-top{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px}
+.reav-meds{display:flex;flex-direction:column;gap:6px;background:#f8fafc;border:1px solid var(--border);border-radius:8px;padding:10px 14px}
+.reav-meds div{display:flex;justify-content:space-between;font-size:13px;gap:12px}
+.reav-meds small{color:var(--muted)}
+.reav-actions{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap}
+#toast{position:fixed;bottom:24px;left:50%;transform:translate(-50%,20px);background:var(--ink);color:#fff;padding:14px 20px;border-radius:10px;font-size:14px;opacity:0;pointer-events:none;transition:.25s;max-width:calc(100% - 32px);box-shadow:0 10px 25px rgba(0,0,0,.25);z-index:30}
+#toast.show{opacity:1;transform:translate(-50%,0)}
+#toast.bad{background:#b91c1c}
+@media(max-width:640px){header{padding:0 16px}main{padding:20px 16px}.logo h1{font-size:15px}.session span.txt{display:none}.pcard{padding:14px}.pmeta{width:100%;justify-content:space-between}.medhead{flex-direction:column;align-items:flex-start}.medactions{width:100%}}
+</style>
+<script src="auth.js"></script>
+<script>DS.guard({setor:"enfermagem:Medicação"})</script>
+</head>
+<body>
+<header>
+  <div class="logo">
+    <div class="badge"><svg class="i" viewBox="0 0 24 24"><path d="M11 2a2 2 0 0 0-2 2v5H4a2 2 0 0 0-2 2v2c0 1.1.9 2 2 2h5v5c0 1.1.9 2 2 2h2a2 2 0 0 0 2-2v-5h5a2 2 0 0 0 2-2v-2a2 2 0 0 0-2-2h-5V4a2 2 0 0 0-2-2Z"/></svg></div>
+    <div><h1>Central de Enfermagem</h1><small>Pronto Atendimento · Urgência e Emergência</small></div>
+  </div>
+  <div class="session">
+    <div class="idchip"><div class="avmini" id="avMini">MS</div><span class="txt" id="idtxt">Enf. Maria Silva</span></div>
+    <button class="linkbtn" id="trocarUsuario" hidden>Trocar usuário</button>
+  </div>
+</header>
+
+<main>
+  <div class="tabs">
+    <div class="tab act" data-tab="fila">Aguardando Medicação <span class="n" id="nFila">0</span></div>
+    <div class="tab" data-tab="reav">Aguardando Reavaliação Médica <span class="n" id="nReav">0</span></div>
+  </div>
+
+  <!-- FILA -->
+  <section id="viewQueue">
+    <div class="pageh">
+      <div><h2>Pacientes Aguardando Medicação</h2><p>Receituários enviados pelos médicos para aplicação imediata nesta rodada de atendimento</p></div>
+    </div>
+    <div class="queue" id="queue" style="margin-top:16px"></div>
+  </section>
+
+  <!-- REAVALIAÇÃO -->
+  <section id="viewReav" hidden>
+    <div class="pageh">
+      <div><h2>Aguardando Reavaliação Médica</h2><p>Pacientes já medicados nesta rodada, aguardando o médico decidir alta ou nova prescrição</p></div>
+    </div>
+    <div class="queue" id="reavList" style="margin-top:16px"></div>
+  </section>
+
+  <!-- CHECKLIST -->
+  <section id="viewPatient" hidden>
+    <button class="btn" id="voltarFila" type="button" style="margin-bottom:16px"><svg class="i" viewBox="0 0 24 24" style="font-size:16px"><path d="m12 19-7-7 7-7M19 12H5"/></svg>Voltar à fila</button>
+
+    <div class="card" style="margin-bottom:16px">
+      <div class="pageh" style="margin-bottom:14px">
+        <div class="sectitle" style="margin:0"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="10" r="3"/><path d="M7 20.7a7 7 0 0 1 10 0"/></svg><span id="pnome">-</span><span class="rodada" id="prodada">-</span></div>
+        <span class="pill" id="prisco">-</span>
+      </div>
+      <div class="pdata">
+        <div><span>Local</span><b id="ploc">-</b></div>
+        <div><span>Prontuário</span><b id="pront">-</b></div>
+        <div><span>Alergias</span><b class="warn" id="palerg">-</b></div>
+        <div><span>Medicado por</span><b id="pnurse">-</b></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="sectitle"><svg class="i" viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>Checklist desta Rodada</div>
+      <div id="meds"></div>
+      <div class="footerbar">
+        <div class="progress" id="resumo"></div>
+        <button class="btn g" id="retornar" type="button" disabled><svg class="i" viewBox="0 0 24 24" style="font-size:16px"><path d="M9 18l6-6-6-6"/></svg>Retornar ao Médico</button>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- Modal de troca de usuário (apenas conveniência de demonstração) -->
+<div class="ov" id="ovUser">
+  <div class="modal">
+    <h3><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>Trocar sessão de enfermagem</h3>
+    <p class="hint2">Simulação: em produção o enfermeiro já estaria autenticado ao entrar no sistema. Escolha abaixo para trocar de sessão nesta demonstração.</p>
+    <div class="ulist" id="userList"></div>
+    <div class="mactions"><button type="button" class="btn" id="userCancel">Cancelar</button></div>
+  </div>
+</div>
+
+<div id="toast" role="status"></div>
+
+<script>
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const p2=n=>String(n).padStart(2,"0");
+const fmt=d=>`${p2(d.getHours())}:${p2(d.getMinutes())}`;
+const RISK={red:["Vermelho","r-red"],orange:["Laranja","r-orange"],yellow:["Amarelo","r-yellow"],green:["Verde","r-green"],blue:["Azul","r-blue"]};
+const NURSES=[{nome:"Enf. Maria Silva",cargo:"Coren 123.456"},{nome:"Enf. João Pedro",cargo:"Coren 234.567"},{nome:"Enf. Beatriz Alves",cargo:"Coren 345.678"}];
+const ALIASES={"amoxicilina":["penicilina"],"ampicilina":["penicilina"],"cefalexina":["cefalosporina"]};
+function conflitaAlergia(alergias,med){
+  const m=med.toLowerCase();
+  return alergias.some(a=>{const al=a.toLowerCase();if(m.includes(al)||al.includes(m))return true;return (ALIASES[m]||[]).includes(al)});
+}
+function medBase(){return [
+  {med:"Dipirona Sódica",dose:1,un:"g",via:"EV"},
+  {med:"Omeprazol",dose:40,un:"mg",via:"EV"},
+  {med:"Ondansetrona",dose:4,un:"mg",via:"EV"}
+]}
+
+// Pacientes do pronto atendimento — cada um chega com a rodada de medicação prescrita agora pelo médico
+let patients=[
+  {id:1,nome:"João da Silva Santos",prontuario:"#854.291-A",local:"Sala Amarela — Box 3",risco:"yellow",alergias:["Dipirona Sódica"],status:"fila",rodada:1,chegada:new Date(Date.now()-25*60000),
+    meds:[{id:"11-1",med:"Dipirona Sódica",dose:1,un:"g",via:"EV",obs:""},{id:"11-2",med:"Omeprazol",dose:40,un:"mg",via:"EV",obs:""},{id:"11-3",med:"Ondansetrona",dose:4,un:"mg",via:"EV",obs:"Diluir em 10mL de SF0,9%"}]},
+  {id:2,nome:"Ana Beatriz Souza",prontuario:"#611.008-B",local:"Sala Vermelha — Box 1",risco:"red",alergias:[],status:"fila",rodada:1,chegada:new Date(Date.now()-52*60000),
+    meds:[{id:"21-1",med:"Ceftriaxona",dose:1,un:"g",via:"EV",obs:"Infundir em 30 min"},{id:"21-2",med:"Dipirona Sódica",dose:1,un:"g",via:"EV",obs:""}]},
+  {id:3,nome:"Carlos Eduardo Lima",prontuario:"#233.774-C",local:"Sala Verde — Box 5",risco:"green",alergias:["Penicilina"],status:"fila",rodada:1,chegada:new Date(Date.now()-8*60000),
+    meds:[{id:"31-1",med:"Amoxicilina",dose:500,un:"mg",via:"VO",obs:""},{id:"31-2",med:"Paracetamol",dose:750,un:"mg",via:"VO",obs:""}]},
+  {id:4,nome:"Fernanda Costa",prontuario:"#905.512-D",local:"Sala Azul — Box 2",risco:"blue",alergias:[],status:"fila",rodada:1,chegada:new Date(Date.now()-15*60000),
+    meds:[{id:"41-1",med:"Furosemida",dose:20,un:"mg",via:"EV",obs:""}]}
+];
+patients.forEach(p=>p.meds.forEach(m=>{m.status="pendente";m.adm=null;m.motivo=null}));
+
+let currentNurse={nome:(DS.session()||{nome:"Maria Silva"}).nome,cargo:""},currentPatientId=null,tab="fila";
+let tt;function toast(m,bad){const t=$("#toast");t.textContent=m;t.className="show"+(bad?" bad":"");clearTimeout(tt);tt=setTimeout(()=>t.className="",3800)}
+function now(){return new Date()}
+function setNurseUI(){$("#idtxt").textContent=currentNurse.nome;$("#avMini").textContent=currentNurse.nome.replace("Enf. ","").split(" ").map(w=>w[0]).slice(0,2).join("")}
+setNurseUI();
+
+function switchTab(t){
+  tab=t;
+  document.querySelectorAll(".tab").forEach(x=>x.classList.toggle("act",x.dataset.tab===t));
+  $("#viewQueue").hidden=t!=="fila";$("#viewReav").hidden=t!=="reav";
+  $("#viewPatient").hidden=true;
+}
+document.querySelectorAll(".tab").forEach(t=>t.onclick=()=>switchTab(t.dataset.tab));
+
+function counts(){
+  $("#nFila").textContent=patients.filter(p=>p.status==="fila").length;
+  $("#nReav").textContent=patients.filter(p=>p.status==="reav").length;
+}
+
+function tempoEspera(d){const m=Math.round((now()-d)/60000);return m<60?`${m} min`:`${Math.floor(m/60)}h${p2(m%60)}`}
+
+function renderQueue(){
+  const list=patients.filter(p=>p.status==="fila").sort((a,b)=>a.chegada-b.chegada);
+  const q=$("#queue");
+  if(!list.length){q.innerHTML=`<div class="empty">Nenhum paciente aguardando medicação no momento.</div>`;return}
+  q.innerHTML=list.map(p=>{
+    const [rt,rc]=RISK[p.risco];
+    const urgent=p.risco==="red"||p.risco==="orange";
+    return `<div class="pcard ${urgent?"urgent":""}" data-sel="${p.id}">
+      <div class="pav">${p.nome.split(" ").slice(0,2).map(w=>w[0]).join("")}</div>
+      <div class="pinfo"><b>${esc(p.nome)}</b><span>${esc(p.local)} · ${p.prontuario}${p.rodada>1?` · Rodada ${p.rodada}`:""}</span></div>
+      <div class="pmeta">
+        <span class="pill ${rc}">${rt}</span>
+        <div class="mcol"><span>Medicamentos</span><b>${p.meds.length}</b></div>
+        <div class="mcol"><span>Aguardando há</span><b>${tempoEspera(p.chegada)}</b></div>
+      </div>
+      <button class="btn p" data-sel="${p.id}">Selecionar Paciente</button>
+    </div>`;
+  }).join("");
+  counts();
+}
+
+$("#queue").addEventListener("click",e=>{
+  const b=e.target.closest("[data-sel]");if(!b)return;
+  openPatient(+b.dataset.sel);
+});
+
+function openPatient(id){
+  currentPatientId=id;
+  const p=patients.find(x=>x.id===id);
+  $("#viewQueue").hidden=true;$("#viewReav").hidden=true;$("#viewPatient").hidden=false;
+  $("#pnome").textContent=p.nome;
+  $("#prodada").textContent=`Rodada ${p.rodada}`;
+  $("#ploc").textContent=p.local;
+  $("#pront").textContent=p.prontuario;
+  $("#palerg").textContent=p.alergias.length?p.alergias.join(", "):"Nenhuma registrada — confirmar";
+  $("#pnurse").textContent=currentNurse.nome;
+  const [rt,rc]=RISK[p.risco];$("#prisco").className="pill "+rc;$("#prisco").textContent=rt;
+  renderMeds(p);
+}
+
+function renderMeds(p){
+  const box=$("#meds");
+  box.innerHTML=p.meds.map(m=>{
+    const conflito=conflitaAlergia(p.alergias,m.med);
+    const alertaHtml=conflito?`<div class="medalert"><svg class="i" viewBox="0 0 24 24"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/><path d="M12 9v4M12 17h.01"/></svg><b>Alerta de alergia:</b>&nbsp;paciente possui alergia registrada relacionada a ${esc(m.med)}. Confirme com o médico responsável antes de administrar.</div>`:"";
+    let statusHtml,actionsHtml;
+    if(m.status==="administrado"){statusHtml=`<span class="status s-ok">Administrado</span>`;actionsHtml=`<div class="donebox" style="padding:0">às ${fmt(m.adm)} por ${esc(m.nurse)}</div>`}
+    else if(m.status==="nao_admin"){statusHtml=`<span class="status s-off">Não administrado</span>`;actionsHtml=`<div class="donebox" style="padding:0">Motivo: ${esc(m.motivo)} — registrado por ${esc(m.nurse)}</div>`}
+    else{statusHtml=`<span class="status s-pend">Pendente</span>`;actionsHtml=`<div class="medactions"><button class="btn g sm" data-adm="${m.id}">Administrar</button><button class="btn r sm" data-neg="${m.id}">Não administrado</button></div>`}
+    return `<div class="medgroup">
+      <div class="medhead">
+        <div><b>${esc(m.med)} — ${m.dose}${esc(m.un)} · ${m.via}</b><small>${m.obs?esc(m.obs):"Aplicação única nesta rodada"}</small></div>
+        <div style="display:flex;gap:10px;align-items:center">${statusHtml}${m.status==="pendente"?"":""}</div>
+        ${m.status==="pendente"?actionsHtml:""}
+      </div>
+      ${alertaHtml}
+      ${m.status!=="pendente"?`<div style="padding:8px 16px 12px">${actionsHtml}</div>`:""}
+    </div>`;
+  }).join("");
+  const pend=p.meds.filter(x=>x.status==="pendente").length,tot=p.meds.length;
+  $("#resumo").textContent=pend?`${tot-pend}/${tot} itens resolvidos — ${pend} pendente(s).`:`${tot}/${tot} itens resolvidos. Pronto para retornar ao médico.`;
+  $("#retornar").disabled=pend>0;
+}
+
+function confirmarAdministracao(p,m){
+  let msg=`CONFIRA ANTES DE ADMINISTRAR\n\nPaciente: ${p.nome} — ${p.local}\nMedicamento: ${m.med}\nDose: ${m.dose} ${m.un}\nVia: ${m.via}\nRegistrado por: ${currentNurse.nome}\n\nO paciente foi identificado (pulseira) e as alergias foram conferidas?`;
+  if(!confirm(msg))return false;
+  if(conflitaAlergia(p.alergias,m.med)){
+    alert(`⚠️ ALERTA DE ALERGIA\n\n${p.nome} possui alergia registrada relacionada a ${m.med}.\nEsta administração será registrada como confirmada mesmo com o alerta, e o médico responsável será notificado antes da reavaliação.`);
+    if(!confirm("Deseja realmente prosseguir com a administração mesmo com o alerta de alergia?"))return false;
+  }
+  return true;
+}
+
+$("#meds").addEventListener("click",e=>{
+  const p=patients.find(x=>x.id===currentPatientId);
+  const adm=e.target.closest("[data-adm]"),neg=e.target.closest("[data-neg]");
+  if(adm){
+    const m=p.meds.find(x=>x.id===adm.dataset.adm);
+    if(!confirmarAdministracao(p,m))return;
+    m.status="administrado";m.adm=new Date();m.nurse=currentNurse.nome;
+    renderMeds(p);toast(`${m.med} administrado e registrado em nome de ${currentNurse.nome}.`);
+  }
+  if(neg){
+    const m=p.meds.find(x=>x.id===neg.dataset.neg);
+    const motivo=prompt(`Por que "${m.med}" não será administrado agora?\n(ex: paciente recusou, acesso venoso perdido, sinal vital alterado)`);
+    if(motivo===null||!motivo.trim())return;
+    m.status="nao_admin";m.motivo=motivo.trim();m.nurse=currentNurse.nome;
+    renderMeds(p);toast(`Registrado: ${m.med} não administrado. O médico será avisado na reavaliação.`,true);
+  }
+});
+
+$("#retornar").onclick=()=>{
+  const p=patients.find(x=>x.id===currentPatientId);
+  if(p.meds.some(x=>x.status==="pendente"))return;
+  const naoAdm=p.meds.filter(x=>x.status==="nao_admin").length;
+  if(!confirm(`Retornar ${p.nome} ao médico para reavaliação?${naoAdm?`\n\nAtenção: ${naoAdm} medicamento(s) não foram administrados e serão sinalizados ao médico.`:""}`))return;
+  p.status="reav";
+  currentPatientId=null;
+  $("#viewPatient").hidden=true;
+  switchTab("fila");
+  renderQueue();renderReav();
+  toast(naoAdm?`${p.nome} encaminhado ao médico com pendência(s) sinalizada(s).`:`${p.nome} encaminhado ao médico para reavaliação.`,naoAdm>0);
+};
+
+function renderReav(){
+  const list=patients.filter(p=>p.status==="reav");
+  const box=$("#reavList");
+  if(!list.length){box.innerHTML=`<div class="empty">Nenhum paciente aguardando reavaliação médica no momento.</div>`;return}
+  box.innerHTML=list.map(p=>{
+    const [rt,rc]=RISK[p.risco];
+    const naoAdm=p.meds.filter(m=>m.status==="nao_admin");
+    return `<div class="reav-card">
+      <div class="reav-top">
+        <div><b style="font-size:15px">${esc(p.nome)}</b><span style="display:block;font-size:12px;color:var(--muted);margin-top:2px">${esc(p.local)} · ${p.prontuario} · Rodada ${p.rodada}</span></div>
+        <span class="pill ${rc}">${rt}</span>
+      </div>
+      <div class="reav-meds">
+        ${p.meds.map(m=>`<div><span>${esc(m.med)} ${m.dose}${esc(m.un)}</span><small>${m.status==="administrado"?"Administrado "+fmt(m.adm):"Não administrado — "+esc(m.motivo)}</small></div>`).join("")}
+      </div>
+      ${naoAdm.length?`<div class="medalert" style="border-radius:8px;border:1px solid #fecaca"><svg class="i" viewBox="0 0 24 24"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/><path d="M12 9v4M12 17h.01"/></svg>${naoAdm.length} medicamento(s) não administrado(s) nesta rodada — revisar antes de decidir.</div>`:""}
+      <div class="reav-actions">
+        <button class="btn r sm" data-alta="${p.id}">Dar Alta</button>
+        <button class="btn p sm" data-nova="${p.id}">Prescrever Nova Rodada</button>
+      </div>
+      <div class="hint" style="font-size:11px;color:var(--muted)">Simulação: em um sistema real, essa decisão parte da tela do médico. Os botões aqui só demonstram o ciclo completo.</div>
+    </div>`;
+  }).join("");
+  counts();
+}
+
+$("#reavList").addEventListener("click",e=>{
+  const alta=e.target.closest("[data-alta]"),nova=e.target.closest("[data-nova]");
+  if(alta){
+    const p=patients.find(x=>x.id==alta.dataset.alta);
+    if(!confirm(`Confirmar alta de ${p.nome}?`))return;
+    patients=patients.filter(x=>x.id!==p.id);
+    renderReav();toast(`${p.nome} recebeu alta e saiu do pronto atendimento.`);
+  }
+  if(nova){
+    const p=patients.find(x=>x.id==nova.dataset.nova);
+    if(!confirm(`Simular nova prescrição médica para ${p.nome}? O paciente voltará à fila de medicação.`))return;
+    p.rodada++;p.status="fila";p.chegada=new Date();
+    p.meds=medBase().map((b,i)=>({id:`${p.id}-${p.rodada}-${i}`,...b,obs:"",status:"pendente",adm:null,motivo:null}));
+    renderReav();renderQueue();switchTab("fila");
+    toast(`Nova rodada prescrita para ${p.nome}. Paciente voltou à fila de medicação.`);
+  }
+});
+
+$("#voltarFila").onclick=()=>{currentPatientId=null;switchTab("fila");renderQueue()};
+
+$("#trocarUsuario").onclick=()=>{
+  $("#userList").innerHTML=NURSES.map((n,i)=>`<div class="uopt" data-u="${i}"><div class="avmini">${n.nome.replace("Enf. ","").split(" ").map(w=>w[0]).slice(0,2).join("")}</div><div><b>${esc(n.nome)}</b><span>${esc(n.cargo)}</span></div></div>`).join("");
+  $("#ovUser").classList.add("open");
+};
+$("#userCancel").onclick=()=>$("#ovUser").classList.remove("open");
+$("#userList").addEventListener("click",e=>{
+  const o=e.target.closest("[data-u]");if(!o)return;
+  currentNurse=NURSES[+o.dataset.u];setNurseUI();$("#ovUser").classList.remove("open");
+  toast(`Sessão trocada para ${currentNurse.nome}.`);
+  if(currentPatientId)$("#pnurse").textContent=currentNurse.nome;
+});
+
+renderQueue();renderReav();
+setInterval(()=>{if(tab==="fila"&&!currentPatientId)renderQueue()},60000);
+</script>
+</body>
+</html>
