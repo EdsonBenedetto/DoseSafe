@@ -104,6 +104,7 @@ main{padding:32px 40px;display:flex;flex-direction:column;gap:28px;max-width:120
 @media(max-width:640px){header{padding:0 16px}main{padding:20px 16px}.logo h1{font-size:15px}.session span.txt{display:none}.pcard{padding:14px}.pmeta{width:100%;justify-content:space-between}.medhead{flex-direction:column;align-items:flex-start}.medactions{width:100%}}
 </style>
 <script src="auth.js"></script>
+<script src="medicamentos.js"></script>
 <script>DS.guard({setor:"enfermagem:Medicação"})</script>
 </head>
 <body>
@@ -117,13 +118,13 @@ main{padding:32px 40px;display:flex;flex-direction:column;gap:28px;max-width:120
     <button class="linkbtn" id="trocarUsuario" hidden>Trocar usuário</button>
   </div>
 </header>
-
+ 
 <main>
   <div class="tabs">
     <div class="tab act" data-tab="fila">Aguardando Medicação <span class="n" id="nFila">0</span></div>
     <div class="tab" data-tab="reav">Aguardando Reavaliação Médica <span class="n" id="nReav">0</span></div>
   </div>
-
+ 
   <!-- FILA -->
   <section id="viewQueue">
     <div class="pageh">
@@ -131,7 +132,7 @@ main{padding:32px 40px;display:flex;flex-direction:column;gap:28px;max-width:120
     </div>
     <div class="queue" id="queue" style="margin-top:16px"></div>
   </section>
-
+ 
   <!-- REAVALIAÇÃO -->
   <section id="viewReav" hidden>
     <div class="pageh">
@@ -139,11 +140,11 @@ main{padding:32px 40px;display:flex;flex-direction:column;gap:28px;max-width:120
     </div>
     <div class="queue" id="reavList" style="margin-top:16px"></div>
   </section>
-
+ 
   <!-- CHECKLIST -->
   <section id="viewPatient" hidden>
     <button class="btn" id="voltarFila" type="button" style="margin-bottom:16px"><svg class="i" viewBox="0 0 24 24" style="font-size:16px"><path d="m12 19-7-7 7-7M19 12H5"/></svg>Voltar à fila</button>
-
+ 
     <div class="card" style="margin-bottom:16px">
       <div class="pageh" style="margin-bottom:14px">
         <div class="sectitle" style="margin:0"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="10" r="3"/><path d="M7 20.7a7 7 0 0 1 10 0"/></svg><span id="pnome">-</span><span class="rodada" id="prodada">-</span></div>
@@ -156,7 +157,7 @@ main{padding:32px 40px;display:flex;flex-direction:column;gap:28px;max-width:120
         <div><span>Medicado por</span><b id="pnurse">-</b></div>
       </div>
     </div>
-
+ 
     <div class="card">
       <div class="sectitle"><svg class="i" viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>Checklist desta Rodada</div>
       <div id="meds"></div>
@@ -167,7 +168,7 @@ main{padding:32px 40px;display:flex;flex-direction:column;gap:28px;max-width:120
     </div>
   </section>
 </main>
-
+ 
 <!-- Modal de troca de usuário (apenas conveniência de demonstração) -->
 <div class="ov" id="ovUser">
   <div class="modal">
@@ -177,9 +178,9 @@ main{padding:32px 40px;display:flex;flex-direction:column;gap:28px;max-width:120
     <div class="mactions"><button type="button" class="btn" id="userCancel">Cancelar</button></div>
   </div>
 </div>
-
+ 
 <div id="toast" role="status"></div>
-
+ 
 <script>
 const $=s=>document.querySelector(s);
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -187,36 +188,22 @@ const p2=n=>String(n).padStart(2,"0");
 const fmt=d=>`${p2(d.getHours())}:${p2(d.getMinutes())}`;
 const RISK={red:["Vermelho","r-red"],orange:["Laranja","r-orange"],yellow:["Amarelo","r-yellow"],green:["Verde","r-green"],blue:["Azul","r-blue"]};
 const NURSES=[{nome:"Enf. Maria Silva",cargo:"Coren 123.456"},{nome:"Enf. João Pedro",cargo:"Coren 234.567"},{nome:"Enf. Beatriz Alves",cargo:"Coren 345.678"}];
-const ALIASES={"amoxicilina":["penicilina"],"ampicilina":["penicilina"],"cefalexina":["cefalosporina"]};
-function conflitaAlergia(alergias,med){
-  const m=med.toLowerCase();
-  return alergias.some(a=>{const al=a.toLowerCase();if(m.includes(al)||al.includes(m))return true;return (ALIASES[m]||[]).includes(al)});
-}
-function medBase(){return [
-  {med:"Dipirona Sódica",dose:1,un:"g",via:"EV"},
-  {med:"Omeprazol",dose:40,un:"mg",via:"EV"},
-  {med:"Ondansetrona",dose:4,un:"mg",via:"EV"}
-]}
-
 // Pacientes do pronto atendimento — cada um chega com a rodada de medicação prescrita agora pelo médico
 let patients=[
-  {id:1,nome:"João da Silva Santos",prontuario:"#854.291-A",local:"Sala Amarela — Box 3",risco:"yellow",alergias:["Dipirona Sódica"],status:"fila",rodada:1,chegada:new Date(Date.now()-25*60000),
-    meds:[{id:"11-1",med:"Dipirona Sódica",dose:1,un:"g",via:"EV",obs:""},{id:"11-2",med:"Omeprazol",dose:40,un:"mg",via:"EV",obs:""},{id:"11-3",med:"Ondansetrona",dose:4,un:"mg",via:"EV",obs:"Diluir em 10mL de SF0,9%"}]},
-  {id:2,nome:"Ana Beatriz Souza",prontuario:"#611.008-B",local:"Sala Vermelha — Box 1",risco:"red",alergias:[],status:"fila",rodada:1,chegada:new Date(Date.now()-52*60000),
-    meds:[{id:"21-1",med:"Ceftriaxona",dose:1,un:"g",via:"EV",obs:"Infundir em 30 min"},{id:"21-2",med:"Dipirona Sódica",dose:1,un:"g",via:"EV",obs:""}]},
-  {id:3,nome:"Carlos Eduardo Lima",prontuario:"#233.774-C",local:"Sala Verde — Box 5",risco:"green",alergias:["Penicilina"],status:"fila",rodada:1,chegada:new Date(Date.now()-8*60000),
-    meds:[{id:"31-1",med:"Amoxicilina",dose:500,un:"mg",via:"VO",obs:""},{id:"31-2",med:"Paracetamol",dose:750,un:"mg",via:"VO",obs:""}]},
-  {id:4,nome:"Fernanda Costa",prontuario:"#905.512-D",local:"Sala Azul — Box 2",risco:"blue",alergias:[],status:"fila",rodada:1,chegada:new Date(Date.now()-15*60000),
-    meds:[{id:"41-1",med:"Furosemida",dose:20,un:"mg",via:"EV",obs:""}]}
+  {id:1,nome:"João da Silva Santos",prontuario:"#854.291-A",local:"Sala Amarela — Box 3",risco:"yellow",alergias:["Dipirona Sódica"],status:"fila",rodada:1,chegada:new Date(Date.now()-25*60000),peso:70,meds:[]},
+  {id:2,nome:"Ana Beatriz Souza",prontuario:"#611.008-B",local:"Sala Vermelha — Box 1",risco:"red",alergias:[],status:"fila",rodada:1,chegada:new Date(Date.now()-52*60000),peso:62,meds:[]},
+  {id:3,nome:"Carlos Eduardo Lima",prontuario:"#233.774-C",local:"Sala Verde — Box 5",risco:"green",alergias:["Penicilina"],status:"fila",rodada:1,chegada:new Date(Date.now()-8*60000),peso:80,meds:[]},
+  {id:4,nome:"Fernanda Costa",prontuario:"#905.512-D",local:"Sala Azul — Box 2",risco:"blue",alergias:[],status:"fila",rodada:1,chegada:new Date(Date.now()-15*60000),peso:58,meds:[]}
 ];
+// Sem medicamentos de exemplo: a prescrição chega da tela do médico (ainda não integrada) e o cadastro de medicamentos é feito pelo administrador.
 patients.forEach(p=>p.meds.forEach(m=>{m.status="pendente";m.adm=null;m.motivo=null}));
-
+ 
 let currentNurse={nome:(DS.session()||{nome:"Maria Silva"}).nome,cargo:""},currentPatientId=null,tab="fila";
 let tt;function toast(m,bad){const t=$("#toast");t.textContent=m;t.className="show"+(bad?" bad":"");clearTimeout(tt);tt=setTimeout(()=>t.className="",3800)}
 function now(){return new Date()}
 function setNurseUI(){$("#idtxt").textContent=currentNurse.nome;$("#avMini").textContent=currentNurse.nome.replace("Enf. ","").split(" ").map(w=>w[0]).slice(0,2).join("")}
 setNurseUI();
-
+ 
 function switchTab(t){
   tab=t;
   document.querySelectorAll(".tab").forEach(x=>x.classList.toggle("act",x.dataset.tab===t));
@@ -224,14 +211,14 @@ function switchTab(t){
   $("#viewPatient").hidden=true;
 }
 document.querySelectorAll(".tab").forEach(t=>t.onclick=()=>switchTab(t.dataset.tab));
-
+ 
 function counts(){
   $("#nFila").textContent=patients.filter(p=>p.status==="fila").length;
   $("#nReav").textContent=patients.filter(p=>p.status==="reav").length;
 }
-
+ 
 function tempoEspera(d){const m=Math.round((now()-d)/60000);return m<60?`${m} min`:`${Math.floor(m/60)}h${p2(m%60)}`}
-
+ 
 function renderQueue(){
   const list=patients.filter(p=>p.status==="fila").sort((a,b)=>a.chegada-b.chegada);
   const q=$("#queue");
@@ -252,12 +239,12 @@ function renderQueue(){
   }).join("");
   counts();
 }
-
+ 
 $("#queue").addEventListener("click",e=>{
   const b=e.target.closest("[data-sel]");if(!b)return;
   openPatient(+b.dataset.sel);
 });
-
+ 
 function openPatient(id){
   currentPatientId=id;
   const p=patients.find(x=>x.id===id);
@@ -271,12 +258,14 @@ function openPatient(id){
   const [rt,rc]=RISK[p.risco];$("#prisco").className="pill "+rc;$("#prisco").textContent=rt;
   renderMeds(p);
 }
-
+ 
 function renderMeds(p){
   const box=$("#meds");
+  if(!p.meds.length){box.innerHTML=`<div class="empty">Nenhum medicamento prescrito para esta rodada ainda.</div>`;$("#resumo").textContent="";$("#retornar").disabled=false;return}
   box.innerHTML=p.meds.map(m=>{
-    const conflito=conflitaAlergia(p.alergias,m.med);
-    const alertaHtml=conflito?`<div class="medalert"><svg class="i" viewBox="0 0 24 24"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/><path d="M12 9v4M12 17h.01"/></svg><b>Alerta de alergia:</b>&nbsp;paciente possui alergia registrada relacionada a ${esc(m.med)}. Confirme com o médico responsável antes de administrar.</div>`:"";
+    const alertas=DSMeds.avaliar({medicamento:m.med,via:m.via,dose:m.dose,peso:p.peso,alergias:p.alergias});
+    const graves=alertas.filter(a=>a.nivel==="bloqueio"||a.nivel==="atencao");
+    const alertaHtml=graves.map(a=>`<div class="medalert"><svg class="i" viewBox="0 0 24 24"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/><path d="M12 9v4M12 17h.01"/></svg><b>${a.nivel==="bloqueio"?"Alerta:":"Atenção:"}</b>&nbsp;${esc(a.msg)}</div>`).join("");
     let statusHtml,actionsHtml;
     if(m.status==="administrado"){statusHtml=`<span class="status s-ok">Administrado</span>`;actionsHtml=`<div class="donebox" style="padding:0">às ${fmt(m.adm)} por ${esc(m.nurse)}</div>`}
     else if(m.status==="nao_admin"){statusHtml=`<span class="status s-off">Não administrado</span>`;actionsHtml=`<div class="donebox" style="padding:0">Motivo: ${esc(m.motivo)} — registrado por ${esc(m.nurse)}</div>`}
@@ -295,17 +284,20 @@ function renderMeds(p){
   $("#resumo").textContent=pend?`${tot-pend}/${tot} itens resolvidos — ${pend} pendente(s).`:`${tot}/${tot} itens resolvidos. Pronto para retornar ao médico.`;
   $("#retornar").disabled=pend>0;
 }
-
+ 
 function confirmarAdministracao(p,m){
   let msg=`CONFIRA ANTES DE ADMINISTRAR\n\nPaciente: ${p.nome} — ${p.local}\nMedicamento: ${m.med}\nDose: ${m.dose} ${m.un}\nVia: ${m.via}\nRegistrado por: ${currentNurse.nome}\n\nO paciente foi identificado (pulseira) e as alergias foram conferidas?`;
   if(!confirm(msg))return false;
-  if(conflitaAlergia(p.alergias,m.med)){
-    alert(`⚠️ ALERTA DE ALERGIA\n\n${p.nome} possui alergia registrada relacionada a ${m.med}.\nEsta administração será registrada como confirmada mesmo com o alerta, e o médico responsável será notificado antes da reavaliação.`);
-    if(!confirm("Deseja realmente prosseguir com a administração mesmo com o alerta de alergia?"))return false;
+  const alertas=DSMeds.avaliar({medicamento:m.med,via:m.via,dose:m.dose,peso:p.peso,alergias:p.alergias});
+  const graves=alertas.filter(a=>a.nivel==="bloqueio"||a.nivel==="atencao");
+  if(graves.length){
+    const txt=graves.map(a=>`${a.nivel==="bloqueio"?"⚠️ ALERTA":"⚠️ ATENÇÃO"}: ${a.msg}`).join("\n\n");
+    alert(`ALERTA DE SEGURANÇA\n\n${txt}\n\nEsta administração será registrada como confirmada mesmo com o alerta, e o médico responsável será notificado na reavaliação.`);
+    if(!confirm("Deseja realmente prosseguir com a administração mesmo com o alerta?"))return false;
   }
   return true;
 }
-
+ 
 $("#meds").addEventListener("click",e=>{
   const p=patients.find(x=>x.id===currentPatientId);
   const adm=e.target.closest("[data-adm]"),neg=e.target.closest("[data-neg]");
@@ -323,7 +315,7 @@ $("#meds").addEventListener("click",e=>{
     renderMeds(p);toast(`Registrado: ${m.med} não administrado. O médico será avisado na reavaliação.`,true);
   }
 });
-
+ 
 $("#retornar").onclick=()=>{
   const p=patients.find(x=>x.id===currentPatientId);
   if(p.meds.some(x=>x.status==="pendente"))return;
@@ -336,7 +328,7 @@ $("#retornar").onclick=()=>{
   renderQueue();renderReav();
   toast(naoAdm?`${p.nome} encaminhado ao médico com pendência(s) sinalizada(s).`:`${p.nome} encaminhado ao médico para reavaliação.`,naoAdm>0);
 };
-
+ 
 function renderReav(){
   const list=patients.filter(p=>p.status==="reav");
   const box=$("#reavList");
@@ -362,7 +354,7 @@ function renderReav(){
   }).join("");
   counts();
 }
-
+ 
 $("#reavList").addEventListener("click",e=>{
   const alta=e.target.closest("[data-alta]"),nova=e.target.closest("[data-nova]");
   if(alta){
@@ -375,14 +367,15 @@ $("#reavList").addEventListener("click",e=>{
     const p=patients.find(x=>x.id==nova.dataset.nova);
     if(!confirm(`Simular nova prescrição médica para ${p.nome}? O paciente voltará à fila de medicação.`))return;
     p.rodada++;p.status="fila";p.chegada=new Date();
-    p.meds=medBase().map((b,i)=>({id:`${p.id}-${p.rodada}-${i}`,...b,obs:"",status:"pendente",adm:null,motivo:null}));
+    p.meds=p.meds.map((b,i)=>({id:`${p.id}-${p.rodada}-${i}`,med:b.med,dose:b.dose,un:b.un,via:b.via,obs:b.obs,status:"pendente",adm:null,motivo:null,nurse:null}));
+    if(!p.meds.length)toast("Aviso: este paciente não tem medicamentos de rodada anterior para repetir — cadastre a prescrição na tela do médico.",true);
     renderReav();renderQueue();switchTab("fila");
     toast(`Nova rodada prescrita para ${p.nome}. Paciente voltou à fila de medicação.`);
   }
 });
-
+ 
 $("#voltarFila").onclick=()=>{currentPatientId=null;switchTab("fila");renderQueue()};
-
+ 
 $("#trocarUsuario").onclick=()=>{
   $("#userList").innerHTML=NURSES.map((n,i)=>`<div class="uopt" data-u="${i}"><div class="avmini">${n.nome.replace("Enf. ","").split(" ").map(w=>w[0]).slice(0,2).join("")}</div><div><b>${esc(n.nome)}</b><span>${esc(n.cargo)}</span></div></div>`).join("");
   $("#ovUser").classList.add("open");
@@ -394,9 +387,10 @@ $("#userList").addEventListener("click",e=>{
   toast(`Sessão trocada para ${currentNurse.nome}.`);
   if(currentPatientId)$("#pnurse").textContent=currentNurse.nome;
 });
-
+ 
 renderQueue();renderReav();
 setInterval(()=>{if(tab==="fila"&&!currentPatientId)renderQueue()},60000);
 </script>
 </body>
 </html>
+ 

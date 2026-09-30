@@ -61,20 +61,41 @@ tr.off{opacity:.55}
 .empty{padding:32px;text-align:center;color:var(--muted);font-size:13px}
 #toast{position:fixed;bottom:24px;left:50%;transform:translate(-50%,20px);background:var(--ink);color:#fff;padding:14px 20px;border-radius:10px;font-size:14px;opacity:0;pointer-events:none;transition:.25s;max-width:calc(100% - 32px);z-index:9}
 #toast.show{opacity:1;transform:translate(-50%,0)}#toast.bad{background:#b91c1c}
+.tabs{display:flex;gap:8px;border-bottom:1px solid var(--border);max-width:1300px;margin:0 auto;padding:0 40px}
+.tab{padding:14px 4px;font-size:14px;font-weight:600;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;margin-right:24px}
+.tab.act{color:var(--primary);border-color:var(--primary)}
+.vialist{display:flex;flex-direction:column;gap:8px}
+.viarow{display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap}
+.viarow>*{flex:1;min-width:100px}
+.viachips{display:flex;flex-direction:column;gap:6px}
+.viachip{display:flex;justify-content:space-between;align-items:center;gap:10px;background:#f8fafc;border:1px solid var(--border);border-radius:8px;padding:8px 12px;font-size:13px}
+.viachip b{font-weight:700}
+.nivel-ok{color:#047857}.nivel-atencao{color:#b45309}.nivel-bloqueio{color:#b91c1c}
+.viachip .rm{background:none;border:0;color:var(--danger);cursor:pointer;font-size:16px;line-height:1}
+textarea{border:1px solid var(--border);border-radius:8px;padding:10px 12px;font-size:14px;font-family:inherit;resize:vertical;min-height:60px;outline:none;transition:.15s;width:100%}
+textarea:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(2,132,199,.15)}
+.pill{display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:999px;margin:0 4px 4px 0}
+.pill-ok{background:#d1fae5;color:#047857}.pill-atencao{background:#fef3c7;color:#b45309}.pill-bloqueio{background:#fee2e2;color:#b91c1c}
 @media(max-width:1020px){main{grid-template-columns:1fr}}
-@media(max-width:640px){header{padding:0 16px}main{padding:16px}.logo h1{font-size:15px}.chip span{display:none}}
+@media(max-width:640px){header{padding:0 16px}main{padding:16px}.logo h1{font-size:15px}.chip span{display:none}.tabs{padding:0 16px}}
 </style>
 <script src="auth.js"></script>
+<script src="medicamentos.js"></script>
 <script>DS.guard({admin:true})</script>
 </head>
 <body>
 <header>
   <div class="logo"><div class="badge"><svg class="i" viewBox="0 0 24 24"><path d="M20 13c0 5-3.5 7.5-7.7 8.97a1 1 0 0 1-.6-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.2-2.7a1.2 1.2 0 0 1 1.6 0C14.5 3.8 17 5 19 5a1 1 0 0 1 1 1Z"/></svg></div>
-  <div><h1>Administração do Sistema</h1><small>Cadastro de funcionários e credenciais</small></div></div>
+  <div><h1>Administração do Sistema</h1><small>Funcionários e medicamentos</small></div></div>
   <div class="chip"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg><span>Administrador</span></div>
 </header>
-
-<main>
+ 
+<div class="tabs">
+  <div class="tab act" data-tab="staff">Funcionários</div>
+  <div class="tab" data-tab="meds">Medicamentos</div>
+</div>
+ 
+<main id="viewStaff">
   <section class="card">
     <div class="title"><svg class="i" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6M22 11h-6"/></svg><span id="ftitle">Novo Funcionário</span></div>
     <form id="f" novalidate>
@@ -93,15 +114,54 @@ tr.off{opacity:.55}
       <button type="button" class="btn" id="cancel" hidden>Cancelar edição</button>
     </form>
   </section>
-
+ 
   <section class="card">
     <div class="title"><svg class="i" viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>Funcionários Cadastrados</div>
     <div class="tools"><input id="q" placeholder="Buscar por nome ou matrícula..."><select id="fa"><option value="">Todas as áreas</option></select></div>
     <div class="tw"><table><thead><tr><th>Funcionário</th><th>Cargo / Área</th><th>Setores liberados</th><th>Status</th><th>Ações</th></tr></thead><tbody id="tb"></tbody></table></div>
   </section>
 </main>
+ 
+<main id="viewMeds" hidden>
+  <section class="card">
+    <div class="title"><svg class="i" viewBox="0 0 24 24"><path d="M10.5 20.5 3.5 13.5a4.95 4.95 0 1 1 7-7l7 7a4.95 4.95 0 1 1-7 7Z"/><path d="m8.5 8.5 7 7"/></svg><span id="mftitle">Novo Medicamento</span></div>
+    <form id="fm" novalidate>
+      <div class="field"><label for="mnome">Nome do medicamento</label><input id="mnome" placeholder="Ex: Adrenalina" autocomplete="off"></div>
+      <div class="field"><label for="mclasse">Classe (opcional)</label><input id="mclasse" placeholder="Ex: Catecolamina / Vasopressor" autocomplete="off"></div>
+ 
+      <div class="field"><label>Vias de administração com restrição</label>
+        <div class="viarow">
+          <select id="mvia"></select>
+          <select id="mnivel"><option value="atencao">Atenção — pode aplicar, com cautela</option><option value="bloqueio">Bloqueada — não recomendada por essa via</option></select>
+          <button type="button" class="btn sm" id="mviaAdd" style="flex:0 0 auto">Adicionar via</button>
+        </div>
+        <input id="mviaObs" placeholder="Explicação que o profissional vai ver (ex: pode causar arritmia grave, necrose tecidual...)" style="margin-top:6px">
+        <div class="viachips" id="mviaList" style="margin-top:8px"></div>
+        <span class="hint">Vias não listadas aqui são consideradas permitidas sem alerta.</span>
+      </div>
+ 
+      <div class="row">
+        <div class="field"><label for="mdosemax">Dose máx. por aplicação</label><input id="mdosemax" type="number" min="0" step="any" placeholder="Ex: 1"></div>
+        <div class="field"><label for="mdoseun">Unidade</label><select id="mdoseun"><option>mg</option><option>g</option><option>mcg</option><option>mL</option><option>UI</option></select></div>
+      </div>
+      <div class="field"><label for="mdosekg">Dose máx. por peso (opcional)</label><input id="mdosekg" type="number" min="0" step="any" placeholder="Ex: 0,1 (mg por kg do paciente)"></div>
+ 
+      <div class="field"><label for="malerg">Alergias / classes relacionadas</label><input id="malerg" placeholder="Separe por vírgula — ex: Penicilina, Betalactâmicos"></div>
+      <div class="field"><label for="mcontra">Contraindicações e observações gerais</label><textarea id="mcontra" placeholder="Ex: Evitar em pacientes com glaucoma de ângulo fechado. Monitorar FC e PA durante a infusão."></textarea></div>
+ 
+      <button type="submit" class="btn p" id="msave">Cadastrar Medicamento</button>
+      <button type="button" class="btn" id="mcancel" hidden>Cancelar edição</button>
+    </form>
+  </section>
+ 
+  <section class="card">
+    <div class="title"><svg class="i" viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>Medicamentos Cadastrados</div>
+    <div class="tools"><input id="mq" placeholder="Buscar por nome ou classe..."></div>
+    <div class="tw"><table><thead><tr><th>Medicamento</th><th>Vias restritas</th><th>Dose máx.</th><th>Status</th><th>Ações</th></tr></thead><tbody id="mtb"></tbody></table></div>
+  </section>
+</main>
 <div id="toast" role="status"></div>
-
+ 
 <script>
 const $=s=>document.querySelector(s);
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -115,10 +175,10 @@ let staff=DS.staff();
 const save=()=>DS.saveStaff(staff);
 let editing=null,sel=new Set(),tt;
 function toast(m,bad){const t=$("#toast");t.textContent=m;t.className="show"+(bad?" bad":"");clearTimeout(tt);tt=setTimeout(()=>t.className="",3800)}
-
+ 
 const areaOpts=Object.entries(AREAS).map(([k,a])=>`<option value="${k}">${a.nome}</option>`).join("");
 $("#area").innerHTML=areaOpts;$("#fa").innerHTML+=areaOpts;
-
+ 
 function fillCargos(keep){
   const a=$("#area").value;
   $("#cargo").innerHTML=AREAS[a].cargos.map(c=>`<option>${c}</option>`).join("");
@@ -143,14 +203,14 @@ $("#area").onchange=()=>{sel.clear();fillCargos();renderSetores()};
 $("#cargo").onchange=renderSetores;
 $("#vsenha").onclick=()=>{const i=$("#senha"),h=i.type==="password";i.type=h?"text":"password";$("#vsenha").textContent=h?"Ocultar":"Mostrar"};
 $("#gen").onclick=()=>{let m;do{m=String(Math.floor(100000+Math.random()*900000))}while(staff.some(s=>s.mat===m));$("#mat").value=m;$("#mat").classList.remove("bad")};
-
+ 
 function resetForm(){
   editing=null;sel.clear();$("#f").reset();$("#mat").disabled=false;$("#senha").type="password";$("#vsenha").textContent="Mostrar";$("#lsenha").textContent="Senha";$("#senha").placeholder="Mínimo 4 caracteres";$("#area").value="enfermagem";fillCargos();renderSetores();
   $("#ftitle").textContent="Novo Funcionário";$("#save").textContent="Cadastrar Funcionário";$("#cancel").hidden=true;
   document.querySelectorAll(".bad").forEach(x=>x.classList.remove("bad"));
 }
 $("#cancel").onclick=()=>{resetForm();$("#cred").classList.remove("show")};
-
+ 
 $("#f").addEventListener("submit",e=>{
   e.preventDefault();
   const nome=$("#nome").value.trim().replace(/\s+/g," "),mat=$("#mat").value.trim();
@@ -172,7 +232,7 @@ $("#f").addEventListener("submit",e=>{
   }
   save();const keep=$("#cred").classList.contains("show");resetForm();if(keep)$("#cred").classList.add("show");render();
 });
-
+ 
 function render(){
   const q=$("#q").value.trim().toLowerCase(),fa=$("#fa").value;
   const l=staff.filter(s=>(!fa||s.area===fa)&&(!q||s.nome.toLowerCase().includes(q)||s.mat.toLowerCase().includes(q)));
@@ -194,8 +254,85 @@ $("#tb").addEventListener("click",e=>{
     s.ativo=!s.ativo;save();render();toast(s.ativo?`${s.nome} reativado.`:`${s.nome} desativado.`);
   }
 });
-
+ 
 fillCargos();renderSetores();render();
+ 
+// Troca de aba
+document.querySelectorAll(".tab").forEach(t=>t.onclick=()=>{
+  document.querySelectorAll(".tab").forEach(x=>x.classList.toggle("act",x===t));
+  $("#viewStaff").hidden=t.dataset.tab!=="staff";
+  $("#viewMeds").hidden=t.dataset.tab!=="meds";
+});
+ 
+/* ---- Medicamentos ---- */
+$("#mvia").innerHTML=DSMeds.VIAS.map(v=>`<option value="${v}">${DSMeds.VIA_NOME[v]}</option>`).join("");
+let meds=DSMeds.list(),mEditing=null,viasTmp=[];
+const saveMeds=()=>DSMeds.save(meds);
+ 
+function renderViaList(){
+  $("#mviaList").innerHTML=viasTmp.length?viasTmp.map((v,i)=>`<div class="viachip"><span><b class="nivel-${v.nivel}">${DSMeds.VIA_NOME[v.via]}</b> — ${v.nivel==="bloqueio"?"Bloqueada":"Atenção"}${v.obs?": "+esc(v.obs):""}</span><button type="button" class="rm" data-rmvia="${i}">×</button></div>`).join(""):`<span class="hint">Nenhuma via restrita adicionada ainda.</span>`;
+}
+$("#mviaAdd").onclick=()=>{
+  const via=$("#mvia").value;
+  if(viasTmp.some(v=>v.via===via))return toast("Essa via já foi adicionada. Remova-a para alterar.",true);
+  viasTmp.push({via,nivel:$("#mnivel").value,obs:$("#mviaObs").value.trim()});
+  $("#mviaObs").value="";renderViaList();
+};
+$("#mviaList").addEventListener("click",e=>{
+  const r=e.target.closest("[data-rmvia]");if(!r)return;
+  viasTmp.splice(+r.dataset.rmvia,1);renderViaList();
+});
+ 
+function resetMedForm(){
+  mEditing=null;viasTmp=[];$("#fm").reset();$("#mdoseun").value="mg";renderViaList();
+  $("#mftitle").textContent="Novo Medicamento";$("#msave").textContent="Cadastrar Medicamento";$("#mcancel").hidden=true;
+  document.querySelectorAll("#fm .bad").forEach(x=>x.classList.remove("bad"));
+}
+$("#mcancel").onclick=resetMedForm;
+ 
+$("#fm").addEventListener("submit",e=>{
+  e.preventDefault();
+  const nome=$("#mnome").value.trim();
+  const dup=!mEditing&&meds.some(m=>m.nome.toLowerCase()===nome.toLowerCase());
+  $("#mnome").classList.toggle("bad",nome.length<2);
+  if(nome.length<2)return toast("Informe o nome do medicamento.",true);
+  if(dup)return toast("Já existe um medicamento com esse nome.",true);
+  const d={
+    nome,classe:$("#mclasse").value.trim(),vias:[...viasTmp],
+    doseMax:$("#mdosemax").value?Number($("#mdosemax").value):null,doseUn:$("#mdoseun").value,
+    doseKg:$("#mdosekg").value?Number($("#mdosekg").value):null,
+    alergias:$("#malerg").value.split(",").map(s=>s.trim()).filter(Boolean),
+    contraindicacoes:$("#mcontra").value.trim()
+  };
+  if(mEditing){Object.assign(meds.find(m=>m.nome===mEditing),d);toast("Medicamento atualizado.")}
+  else{meds.push({...d,ativo:true});toast("Medicamento cadastrado.")}
+  saveMeds();resetMedForm();renderMeds();
+});
+ 
+function renderMeds(){
+  const q=$("#mq").value.trim().toLowerCase();
+  const l=meds.filter(m=>!q||m.nome.toLowerCase().includes(q)||(m.classe||"").toLowerCase().includes(q));
+  $("#mtb").innerHTML=l.length?l.map(m=>`<tr class="${m.ativo===false?"off":""}"><td><b>${esc(m.nome)}</b>${m.classe?`<small>${esc(m.classe)}</small>`:""}</td><td>${m.vias&&m.vias.length?m.vias.map(v=>`<span class="pill pill-${v.nivel}">${v.via}</span>`).join(""):"<small>Nenhuma restrição</small>"}</td><td>${m.doseMax?`${m.doseMax}${esc(m.doseUn)}${m.doseKg?` · ${m.doseKg}${esc(m.doseUn)}/kg`:""}`:"—"}</td><td><span class="st ${m.ativo===false?"no":"on"}">${m.ativo===false?"Inativo":"Ativo"}</span></td><td><div class="acts"><button class="btn sm" data-me="${esc(m.nome)}">Editar</button><button class="btn sm r" data-mt="${esc(m.nome)}">${m.ativo===false?"Reativar":"Desativar"}</button></div></td></tr>`).join(""):`<tr><td colspan="5" class="empty">Nenhum medicamento cadastrado ainda.</td></tr>`;
+}
+$("#mq").oninput=renderMeds;
+$("#mtb").addEventListener("click",e=>{
+  const ed=e.target.closest("[data-me]"),tg=e.target.closest("[data-mt]");
+  if(ed){
+    const m=meds.find(x=>x.nome===ed.dataset.me);mEditing=m.nome;
+    $("#mnome").value=m.nome;$("#mclasse").value=m.classe||"";viasTmp=[...(m.vias||[])];renderViaList();
+    $("#mdosemax").value=m.doseMax||"";$("#mdoseun").value=m.doseUn||"mg";$("#mdosekg").value=m.doseKg||"";
+    $("#malerg").value=(m.alergias||[]).join(", ");$("#mcontra").value=m.contraindicacoes||"";
+    $("#mftitle").textContent="Editar Medicamento";$("#msave").textContent="Salvar Alterações";$("#mcancel").hidden=false;
+    window.scrollTo({top:0,behavior:"smooth"});
+  }
+  if(tg){
+    const m=meds.find(x=>x.nome===tg.dataset.mt);
+    m.ativo=!(m.ativo!==false);saveMeds();renderMeds();
+    toast(m.ativo?`${m.nome} reativado — volta a aparecer nas buscas.`:`${m.nome} desativado — some das buscas, mas o histórico é mantido.`);
+  }
+});
+ 
+renderViaList();renderMeds();
 </script>
 </body>
 </html>

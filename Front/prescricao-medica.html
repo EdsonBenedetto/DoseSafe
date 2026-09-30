@@ -88,6 +88,7 @@ footer{border-top:1px solid var(--border);padding-top:24px;display:flex;justify-
 @media(max-width:640px){header{padding:0 16px}main{padding:16px}.user div{display:none}.logo h1{font-size:15px}.pdata>div:not(:first-child){width:calc(50% - 16px)}footer .btn{width:100%}}
 </style>
 <script src="auth.js"></script>
+<script src="medicamentos.js"></script>
 <script>DS.guard({setor:"medica:Prescrição"})</script>
 </head>
 <body>
@@ -98,7 +99,7 @@ footer{border-top:1px solid var(--border);padding-top:24px;display:flex;justify-
   </div>
   <div class="user"><div><b>Dr. Carlos Mendes</b><span>CRM 123456-SP — Clínico Geral</span></div><div class="avatar">CM</div></div>
 </header>
-
+ 
 <main>
   <section class="card">
     <div class="sum-top">
@@ -113,32 +114,32 @@ footer{border-top:1px solid var(--border);padding-top:24px;display:flex;justify-
       <div><span>Nº Prontuário</span><b>#854.291-A</b></div>
     </div>
   </section>
-
+ 
   <div class="ws">
     <form class="card form" id="f" novalidate>
       <div class="title"><svg class="i" viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 2v2M12 2v2M16 2v2M8 10h8M8 14h8M8 18h5"/></svg><span id="ftitle">Nova Prescrição</span></div>
       <hr class="hr" style="margin:-4px 0 0">
-
+ 
       <div class="field"><label for="med">Medicamento</label>
         <div class="ctl" id="cmed"><input id="med" type="text" placeholder="Buscar medicamento..." autocomplete="off" role="combobox" aria-expanded="false" aria-controls="dd"><svg class="i" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></div>
         <div class="dd" id="dd" role="listbox"></div>
       </div>
-
+ 
       <div class="row">
         <div class="field" style="width:180px"><label for="dose">Dose</label><div class="ctl" id="cdose"><input id="dose" type="number" min="0" step="any" inputmode="decimal" placeholder="Ex: 500"></div></div>
         <div class="field" style="flex:1"><label for="un">Unidade de Medida</label><div class="ctl"><select id="un"><option>mg</option><option>g</option><option>mcg</option><option>mL</option><option>UI</option><option>comprimido(s)</option><option>gota(s)</option></select><svg class="i" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></div></div>
       </div>
-
+ 
       <div class="field"><label for="via">Via de Administração</label><div class="ctl"><select id="via"><option value="EV">Endovenosa (EV)</option><option value="VO">Via Oral (VO)</option><option value="IM">Intramuscular (IM)</option><option value="SC">Subcutânea (SC)</option><option value="SL">Sublingual (SL)</option><option value="INAL">Inalatória</option><option value="TOP">Tópica</option></select><svg class="i" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></div></div>
-
+ 
       <div class="field"><label for="int">Intervalo</label><div class="ctl" id="cint"><input id="int" type="number" min="1" max="72" step="1" inputmode="numeric" placeholder="Ex: 8"><span class="sfx">em ___ horas</span></div></div>
-
+ 
       <div class="field"><label for="obs">Observações (Opcional)</label><div class="ta"><textarea id="obs" maxlength="300" placeholder="Digite observações de diluição, velocidade de infusão, etc..."></textarea></div></div>
-
+ 
       <button type="submit" class="btn p" id="add"><svg class="i" viewBox="0 0 24 24" style="font-size:16px"><path d="M5 12h14M12 5v14"/></svg><span>Adicionar Prescrição</span></button>
       <button type="button" class="link" id="cancelEdit" hidden>Cancelar edição</button>
     </form>
-
+ 
     <section class="card">
       <div class="title"><svg class="i" viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>Prescrições do Atendimento</div>
       <hr class="hr">
@@ -146,44 +147,40 @@ footer{border-top:1px solid var(--border);padding-top:24px;display:flex;justify-
       <div class="legend"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>As prescrições listadas serão impressas e enviadas diretamente à equipe de enfermagem.</div>
     </section>
   </div>
-
+ 
   <footer>
     <button class="btn" id="voltar" type="button"><svg class="i" viewBox="0 0 24 24" style="font-size:16px"><path d="m12 19-7-7 7-7M19 12H5"/></svg>Voltar ao Painel</button>
     <button class="btn g" id="fin" type="button"><svg class="i" viewBox="0 0 24 24" style="font-size:16px"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>Finalizar Atendimento</button>
   </footer>
 </main>
 <div id="toast" role="status"></div>
-
+ 
 <script>
 const $=s=>document.querySelector(s);
-const MEDS=["Dipirona Sódica","Paracetamol","Ibuprofeno","Omeprazol","Ondansetrona","Metoclopramida","Ceftriaxona","Amoxicilina","Ciprofloxacino","Dexametasona","Hidrocortisona","Furosemida","Captopril","Losartana","Metformina","Insulina Regular","Salbutamol","Morfina","Tramadol","Cetorolaco","Buscopan (Escopolamina)","Soro Fisiológico 0,9%","Ringer Lactato"];
 const p2=n=>String(n).padStart(2,"0");
 const stamp=d=>`${p2(d.getDate())}/${p2(d.getMonth()+1)}/${d.getFullYear()} ${p2(d.getHours())}:${p2(d.getMinutes())}`;
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-let rx=[
-  {id:1,med:"Dipirona Sódica",dose:500,un:"mg",via:"EV",int:6,obs:"",dt:"24/09/2026 14:30"},
-  {id:2,med:"Omeprazol",dose:40,un:"mg",via:"EV",int:24,obs:"",dt:"24/09/2026 14:32"},
-  {id:3,med:"Ondansetrona",dose:4,un:"mg",via:"EV",int:8,obs:"",dt:"24/09/2026 14:35"}];
-let nextId=4,editId=null,done=false;
-
+let rx=[];
+let nextId=1,editId=null,done=false;
+ 
 // Idade calculada a partir da data de nascimento
 (()=>{const b=new Date(1985,2,15),n=new Date();let a=n.getFullYear()-b.getFullYear();if(n<new Date(n.getFullYear(),2,15))a--;$("#nasc").textContent=`15/03/1985 (${a} anos)`})();
-
+ 
 let tt;function toast(m,bad){const t=$("#toast");t.textContent=m;t.className="show"+(bad?" bad":"");clearTimeout(tt);tt=setTimeout(()=>t.className="",3800)}
-
+ 
 function render(){
   const tb=$("#tb");
-  tb.innerHTML=rx.length?rx.map(r=>`<tr class="${r.id===editId?"editing":""}"><td class="n">${esc(r.med)}${r.obs?`<small>${esc(r.obs)}</small>`:""}</td><td>${r.dose} ${esc(r.un)}</td><td>${r.via}</td><td>${r.int}/${r.int}h</td><td class="d">${r.dt}</td><td><button class="ib e" data-e="${r.id}" aria-label="Editar ${esc(r.med)}" ${done?"disabled":""}><svg class="i" viewBox="0 0 24 24"><path d="M21.2 5.6 18.4 2.8a2 2 0 0 0-2.8 0L3 15.4V21h5.6L21.2 8.4a2 2 0 0 0 0-2.8ZM15 5l4 4"/></svg></button><button class="ib x" data-x="${r.id}" aria-label="Remover ${esc(r.med)}" ${done?"disabled":""}><svg class="i" viewBox="0 0 24 24"><path d="M3 6h18M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6M10 11v6M14 11v6M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button></td></tr>`).join(""):`<tr><td colspan="6" class="empty">Nenhuma prescrição adicionada neste atendimento.</td></tr>`;
+  tb.innerHTML=rx.length?rx.map(r=>`<tr class="${r.id===editId?"editing":""}"><td class="n">${esc(r.med)}${r.obs?`<small>${esc(r.obs)}</small>`:""}${r.alerta?`<small style="color:#b91c1c">⚠️ ${esc(r.alerta)}</small>`:""}</td><td>${r.dose} ${esc(r.un)}</td><td>${r.via}</td><td>${r.int}/${r.int}h</td><td class="d">${r.dt}</td><td><button class="ib e" data-e="${r.id}" aria-label="Editar ${esc(r.med)}" ${done?"disabled":""}><svg class="i" viewBox="0 0 24 24"><path d="M21.2 5.6 18.4 2.8a2 2 0 0 0-2.8 0L3 15.4V21h5.6L21.2 8.4a2 2 0 0 0 0-2.8ZM15 5l4 4"/></svg></button><button class="ib x" data-x="${r.id}" aria-label="Remover ${esc(r.med)}" ${done?"disabled":""}><svg class="i" viewBox="0 0 24 24"><path d="M3 6h18M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6M10 11v6M14 11v6M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button></td></tr>`).join(""):`<tr><td colspan="6" class="empty">Nenhuma prescrição adicionada neste atendimento.</td></tr>`;
 }
-
+ 
 // Combobox de medicamento
 const med=$("#med"),dd=$("#dd");let act=-1;
 function showDD(){
   const q=med.value.trim().toLowerCase();
-  const l=MEDS.filter(m=>m.toLowerCase().includes(q)).slice(0,30);
+  const l=DSMeds.buscar(q).slice(0,30).map(m=>m.nome);
   let h=l.map((m,i)=>`<div role="option" data-v="${esc(m)}" class="${i===act?"act":""}">${esc(m)}</div>`).join("");
-  if(q&&!MEDS.some(m=>m.toLowerCase()===q))h+=`<div role="option" data-v="${esc(med.value.trim())}">Usar “${esc(med.value.trim())}”<small>(digitado)</small></div>`;
-  dd.innerHTML=h||`<div style="color:var(--muted);cursor:default">Sem resultados</div>`;
+  if(q&&!l.some(m=>m.toLowerCase()===q))h+=`<div role="option" data-v="${esc(med.value.trim())}">Usar “${esc(med.value.trim())}”<small>(não cadastrado na base — sem verificação de segurança)</small></div>`;
+  dd.innerHTML=h||(q?`<div style="color:var(--muted);cursor:default">Nenhum medicamento cadastrado com esse nome</div>`:`<div style="color:var(--muted);cursor:default">Nenhum medicamento cadastrado ainda — peça ao administrador</div>`);
   dd.classList.add("open");med.setAttribute("aria-expanded","true");
 }
 function hideDD(){dd.classList.remove("open");med.setAttribute("aria-expanded","false");act=-1}
@@ -199,9 +196,9 @@ med.addEventListener("keydown",e=>{
 dd.addEventListener("mousedown",e=>{const o=e.target.closest("[data-v]");if(!o)return;e.preventDefault();med.value=o.dataset.v;hideDD();$("#cmed").classList.remove("bad");$("#dose").focus()});
 document.addEventListener("click",e=>{if(!e.target.closest(".field"))hideDD()});
 med.addEventListener("blur",()=>setTimeout(hideDD,120));
-
+ 
 function resetForm(){$("#f").reset();$("#via").value="EV";editId=null;$("#ftitle").textContent="Nova Prescrição";$("#add span").textContent="Adicionar Prescrição";$("#cancelEdit").hidden=true;document.querySelectorAll(".bad").forEach(x=>x.classList.remove("bad"));render()}
-
+ 
 $("#f").addEventListener("submit",e=>{
   e.preventDefault();
   if(done)return;
@@ -213,12 +210,18 @@ $("#f").addEventListener("submit",e=>{
   if(!okI)return toast("O intervalo deve ficar entre 1 e 72 horas.",true);
   const dup=rx.some(r=>r.id!==editId&&r.med.toLowerCase()===m.toLowerCase());
   if(dup&&!confirm(`“${m}” já está prescrito neste atendimento. Deseja adicionar mesmo assim?`))return;
-  const item={med:m,dose,un:$("#un").value,via:$("#via").value,int:iv,obs:$("#obs").value.trim()};
+  const alertas=DSMeds.avaliar({medicamento:m,via:$("#via").value,dose,alergias:[]});
+  const grave=alertas.filter(a=>a.nivel==="bloqueio"||a.nivel==="atencao");
+  if(grave.length){
+    const txt=grave.map(a=>`${a.nivel==="bloqueio"?"⚠️ BLOQUEIO":"⚠️ ATENÇÃO"}: ${a.msg}`).join("\n\n");
+    if(!confirm(`ALERTA DE SEGURANÇA DA PRESCRIÇÃO\n\n${txt}\n\nDeseja prescrever mesmo assim? Isso ficará registrado.`))return;
+  }
+  const item={med:m,dose,un:$("#un").value,via:$("#via").value,int:iv,obs:$("#obs").value.trim(),alerta:grave.length?grave.map(a=>a.msg).join(" | "):""};
   if(editId){const r=rx.find(x=>x.id===editId);Object.assign(r,item);toast("Prescrição atualizada.")}
   else{rx.push({id:nextId++,...item,dt:stamp(new Date())});toast("Prescrição adicionada.")}
   resetForm();
 });
-
+ 
 $("#tb").addEventListener("click",e=>{
   const ed=e.target.closest("[data-e]"),dl=e.target.closest("[data-x]");
   if(ed){const r=rx.find(x=>x.id==ed.dataset.e);editId=r.id;med.value=r.med;$("#dose").value=r.dose;$("#un").value=r.un;$("#via").value=r.via;$("#int").value=r.int;$("#obs").value=r.obs;
@@ -226,9 +229,9 @@ $("#tb").addEventListener("click",e=>{
   if(dl){const r=rx.find(x=>x.id==dl.dataset.x);if(!confirm(`Remover “${r.med}” das prescrições?`))return;rx=rx.filter(x=>x.id!==r.id);if(editId===r.id)resetForm();else render();toast("Prescrição removida.")}
 });
 $("#cancelEdit").onclick=resetForm;
-
+ 
 $("#voltar").onclick=()=>{if(!done&&(rx.length||med.value)&&!confirm("Voltar ao painel? Alterações não finalizadas serão mantidas apenas nesta tela."))return;toast("Voltando ao painel (simulado).")};
-
+ 
 $("#fin").onclick=()=>{
   if(done)return;
   if(!rx.length)return toast("Adicione ao menos uma prescrição antes de finalizar.",true);
@@ -238,7 +241,7 @@ $("#fin").onclick=()=>{
   done=true;$("#fin").disabled=true;$("#add").disabled=true;document.querySelectorAll("#f input,#f select,#f textarea").forEach(x=>x.disabled=true);render();
   toast("Atendimento finalizado. Prescrições enviadas à enfermagem.");
 };
-
+ 
 render();
 </script>
 </body>
