@@ -10,13 +10,13 @@
   ];
   // Telas do sistema e o setor exigido para cada uma
   const PAGES = [
-    { f: "triagem-hospitalar.html", n: "Triagem", d: "Cadastro e classificação de risco do paciente", s: "enfermagem:Triagem" },
+    { f: "triagem-hospitalar (2).html", n: "Triagem", d: "Cadastro e classificação de risco do paciente", s: "enfermagem:Triagem" },
     { f: "central-enfermagem.html", n: "Medicação", d: "Central de enfermagem: aplicar a medicação prescrita", s: "enfermagem:Medicação" },
     { f: "prescricao-enfermaria.html", n: "Prescrição (pronto atendimento)", d: "Prescrever medicação para a enfermaria", s: "medica:Prescrição" },
     { f: "prescricao-medica.html", n: "Prescrição (receita)", d: "Prescrição médica do atendimento", s: "medica:Prescrição" },
     { f: "admin-funcionarios.html", n: "Administração", d: "Cadastro de funcionários e setores", admin: true }
   ];
-  const LOGIN = "dosesafe-login.html";
+  const LOGIN = "login.html";
 
   function staff() {
     let s = null;
