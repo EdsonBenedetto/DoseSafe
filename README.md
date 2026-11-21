@@ -29,3 +29,9 @@ As páginas continuam independentes, mas a apresentação e o comportamento fica
 - `src/js/pages/<tela>.js`: interações específicas de cada tela.
 
 Os dados continuam armazenados no navegador nesta etapa. A próxima evolução pode introduzir módulos ES e uma ferramenta de build (por exemplo, Vite), mantendo uma migração gradual das telas; para compartilhamento de dados e autenticação segura entre usuários, será necessário também um backend.
+
+### Sincronização automática da lista de ICs
+
+O workspace do VS Code inicia `tools/sync_ics.py --watch` ao ser aberto. Quando detecta uma mudança local nos arquivos associados a um IC, o sincronizador registra `Gustavo Farias` como responsável por esse item. Essa atribuição segue a convenção definida pela equipe; o sistema de arquivos não identifica a pessoa que editou o arquivo. Na primeira abertura, autorize a execução da tarefa automática do workspace se o VS Code solicitar.
+
+Para executar manualmente uma sincronização, use `python3 tools/sync_ics.py`. A planilha deve estar fechada durante a gravação; se estiver aberta no LibreOffice, o sincronizador aguarda o fechamento antes de aplicar a atualização. O modo contínuo pode ser encerrado com `Ctrl+C` no terminal da tarefa.
