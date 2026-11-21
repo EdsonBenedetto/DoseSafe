@@ -23,6 +23,7 @@ As páginas continuam independentes, mas a apresentação e o comportamento fica
 - `src/pages/`: estrutura HTML de cada tela;
 - `src/css/base.css`: tokens e regras visuais compartilhadas;
 - `src/css/fluent.css`: camada visual comum inspirada no Fluent;
+- `src/css/theme.css` e `src/js/theme.js`: tema claro/escuro com preferência salva no navegador;
 - `src/css/<tela>.css`: estilos específicos de cada tela;
 - `src/js/auth.js` e `src/js/medicamentos.js`: serviços compartilhados de autenticação e regras de medicamentos;
 - `src/js/pages/<tela>.js`: interações específicas de cada tela.

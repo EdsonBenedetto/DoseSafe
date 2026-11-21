@@ -1,0 +1,328 @@
+html[data-theme="dark"] {
+  color-scheme: dark;
+  --primary: #60cdff;
+  --primary-dark: #99dcff;
+  --ink: #f5f5f5;
+  --label: #d6d6d6;
+  --muted: #b3b3b3;
+  --border: #454545;
+  --danger: #ff99a4;
+  --fluent-canvas: #202020;
+  --fluent-surface: #292929;
+  --fluent-hover: #383838;
+  --fluent-focus: #60cdff;
+  --fluent-shadow: 0 2px 6px rgba(0, 0, 0, .24);
+}
+
+html[data-theme="dark"] body,
+html[data-theme="dark"] body:has(.login-card) {
+  color: var(--ink);
+  background: var(--fluent-canvas);
+}
+
+html[data-theme="dark"] header,
+html[data-theme="dark"] .card,
+html[data-theme="dark"] .pcard,
+html[data-theme="dark"] .modal,
+html[data-theme="dark"] .login-card,
+html[data-theme="dark"] a.card,
+html[data-theme="dark"] table {
+  color: var(--ink);
+  background-color: var(--fluent-surface);
+  border-color: #3d3d3d;
+}
+
+html[data-theme="dark"] .logo small,
+html[data-theme="dark"] .user span,
+html[data-theme="dark"] .pageh p,
+html[data-theme="dark"] .pinfo span,
+html[data-theme="dark"] .mcol span,
+html[data-theme="dark"] .medhead small,
+html[data-theme="dark"] td,
+html[data-theme="dark"] .hint,
+html[data-theme="dark"] .sub,
+html[data-theme="dark"] .footer-info,
+html[data-theme="dark"] .footer-info p,
+html[data-theme="dark"] .form-group label,
+html[data-theme="dark"] label,
+html[data-theme="dark"] .lbl {
+  color: var(--muted);
+}
+
+html[data-theme="dark"] h1,
+html[data-theme="dark"] h2,
+html[data-theme="dark"] h3,
+html[data-theme="dark"] b,
+html[data-theme="dark"] .title,
+html[data-theme="dark"] .sectitle,
+html[data-theme="dark"] .card-h h2,
+html[data-theme="dark"] .pinfo b,
+html[data-theme="dark"] .mcol b,
+html[data-theme="dark"] td b,
+html[data-theme="dark"] a.card,
+html[data-theme="dark"] .success-panel p {
+  color: var(--ink);
+}
+
+html[data-theme="dark"] input:not([type="checkbox"]):not([type="radio"]),
+html[data-theme="dark"] select,
+html[data-theme="dark"] textarea,
+html[data-theme="dark"] .ctl,
+html[data-theme="dark"] .ta,
+html[data-theme="dark"] .vital,
+html[data-theme="dark"] .form-group input {
+  color: var(--ink);
+  background-color: #202020;
+  border-color: #666;
+}
+
+html[data-theme="dark"] input::placeholder,
+html[data-theme="dark"] textarea::placeholder {
+  color: #a0a0a0;
+}
+
+html[data-theme="dark"] option {
+  color: var(--ink);
+  background: #292929;
+}
+
+html[data-theme="dark"] .btn,
+html[data-theme="dark"] .btn-demo,
+html[data-theme="dark"] .btn-badge-scan {
+  color: var(--ink);
+  background: #333;
+  border-color: #666;
+}
+
+html[data-theme="dark"] .btn:hover,
+html[data-theme="dark"] .btn-demo:hover,
+html[data-theme="dark"] .btn-badge-scan:hover {
+  color: #fff;
+  background: #454545;
+}
+
+html[data-theme="dark"] .btn.p,
+html[data-theme="dark"] .btn-login {
+  color: #082338;
+  background: #60cdff;
+  border-color: #60cdff;
+}
+
+html[data-theme="dark"] .btn.p:hover,
+html[data-theme="dark"] .btn-login:hover {
+  color: #082338;
+  background: #99dcff;
+  border-color: #99dcff;
+}
+
+html[data-theme="dark"] .btn.g {
+  color: #fff;
+  background: #107c10;
+  border-color: #107c10;
+}
+
+html[data-theme="dark"] .btn.r {
+  color: #ff99a4;
+  background: #3d2024;
+  border-color: #8a343d;
+}
+
+html[data-theme="dark"] .tabs,
+html[data-theme="dark"] .tab,
+html[data-theme="dark"] .card-h,
+html[data-theme="dark"] .hr,
+html[data-theme="dark"] footer,
+html[data-theme="dark"] td,
+html[data-theme="dark"] .medgroup,
+html[data-theme="dark"] .tw {
+  border-color: #454545;
+}
+
+html[data-theme="dark"] th,
+html[data-theme="dark"] .medhead,
+html[data-theme="dark"] .setores,
+html[data-theme="dark"] .viachip,
+html[data-theme="dark"] .uopt,
+html[data-theme="dark"] .st,
+html[data-theme="dark"] .dd,
+html[data-theme="dark"] .dd div,
+html[data-theme="dark"] .empty,
+html[data-theme="dark"] .opt,
+html[data-theme="dark"] .ib.e {
+  color: var(--ink);
+  background-color: #333;
+  border-color: #454545;
+}
+
+html[data-theme="dark"] tbody tr:hover td,
+html[data-theme="dark"] .dd div:hover,
+html[data-theme="dark"] .dd div.act {
+  color: var(--ink);
+  background-color: #383838;
+}
+
+html[data-theme="dark"] tr.editing td,
+html[data-theme="dark"] .uopt:hover,
+html[data-theme="dark"] .opt:has(input:checked),
+html[data-theme="dark"] .st:has(input:checked) {
+  color: #d6efff;
+  background-color: #17364a;
+}
+
+html[data-theme="dark"] .badge {
+  color: #082338;
+  background: #60cdff;
+}
+
+html[data-theme="dark"] .chip,
+html[data-theme="dark"] .idchip,
+html[data-theme="dark"] .tag,
+html[data-theme="dark"] .preview,
+html[data-theme="dark"] .ico {
+  color: #d6efff;
+  background-color: #17364a;
+  border-color: #285673;
+}
+
+html[data-theme="dark"] .chip.on {
+  color: #082338;
+  background: #60cdff;
+}
+
+html[data-theme="dark"] .medalert,
+html[data-theme="dark"] .alert,
+html[data-theme="dark"] .invalid,
+html[data-theme="dark"] .form-group input.invalid {
+  color: #ffb3ba;
+  background-color: #3b2023;
+  border-color: #8a343d;
+}
+
+html[data-theme="dark"] .r-red,
+html[data-theme="dark"] .s-off,
+html[data-theme="dark"] .p-off {
+  color: #ffb3ba;
+  background-color: #3b2023;
+}
+
+html[data-theme="dark"] .r-orange,
+html[data-theme="dark"] .r-yellow,
+html[data-theme="dark"] .warn,
+html[data-theme="dark"] .p-pend,
+html[data-theme="dark"] .p-late {
+  color: #f9d690;
+  background-color: #3d3217;
+}
+
+html[data-theme="dark"] .r-green,
+html[data-theme="dark"] .s-ok,
+html[data-theme="dark"] .p-ok,
+html[data-theme="dark"] .cred {
+  color: #9de2b0;
+  background-color: #193524;
+  border-color: #315c3d;
+}
+
+html[data-theme="dark"] .r-blue,
+html[data-theme="dark"] .p-sent {
+  color: #b4d6fa;
+  background-color: #1b3049;
+}
+
+html[data-theme="dark"] .status,
+html[data-theme="dark"] .st:has(input:checked) {
+  color: var(--ink);
+}
+
+html[data-theme="dark"] #toast {
+  color: #f5f5f5;
+  background: #333;
+  border: 1px solid #555;
+}
+
+html[data-theme="dark"] #toast.bad {
+  color: #fff;
+  background: #8a2029;
+}
+
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 36px;
+  margin-left: auto;
+  padding: 0 12px;
+  color: #424242;
+  background: #fff;
+  border: 1px solid #8a8886;
+  border-radius: 4px;
+  font: 600 13px/1 "Segoe UI Variable", "Segoe UI", Arial, sans-serif;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color .14s ease, border-color .14s ease;
+}
+
+.theme-toggle:hover {
+  background: #f0f0f0;
+}
+
+.theme-toggle:focus-visible {
+  outline: 2px solid #0f6cbd;
+  outline-offset: 2px;
+}
+
+.theme-toggle__icon {
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+html[data-theme="dark"] .theme-toggle {
+  color: #f5f5f5;
+  background: #333;
+  border-color: #666;
+}
+
+html[data-theme="dark"] .theme-toggle:hover {
+  background: #454545;
+}
+
+html[data-theme="dark"] .theme-toggle:focus-visible {
+  outline-color: #60cdff;
+}
+
+@media (max-width: 640px) {
+  .theme-toggle {
+    min-height: 34px;
+    padding: 0 9px;
+    font-size: 12px;
+  }
+
+  .theme-toggle--floating {
+    position: fixed;
+    top: 12px;
+    right: 12px;
+    z-index: 100;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, .18);
+  }
+}
+
+.theme-toggle--floating {
+  position: fixed;
+  top: 16px;
+  right: 20px;
+  z-index: 100;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, .12);
+}
+
+@media (max-width: 640px) {
+  .theme-toggle--floating {
+    top: 12px;
+    right: 12px;
+  }
+}
