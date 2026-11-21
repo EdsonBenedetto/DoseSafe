@@ -13,6 +13,7 @@ import hashlib
 import io
 import os
 from pathlib import Path
+import subprocess
 import tempfile
 import time
 import zipfile
@@ -258,7 +259,12 @@ def sync(changed_rows: set[int] | None = None) -> bool:
             for column, value in zip("ABCDEFGH", values))
         for row_number, values in NEW_ROWS.items()
     )
-    if not changed_rows and not has_hash_column and descriptions_match and new_rows_match:
+    owner_updates = {
+        row_number
+        for row_number in changed_rows
+        if cell_text(find_row(sheet_data, row_number), f"G{row_number}", shared_strings) != "Gustavo Farias"
+    }
+    if not owner_updates and not has_hash_column and descriptions_match and new_rows_match:
         return True
 
     for row_number, values in NEW_ROWS.items():
@@ -268,7 +274,7 @@ def sync(changed_rows: set[int] | None = None) -> bool:
     for row_number, description in DESCRIPTION_UPDATES.items():
         put_cell(sheet_data, row_number, "D", description)
 
-    for row_number in changed_rows:
+    for row_number in owner_updates:
         put_cell(sheet_data, row_number, "G", "Gustavo Farias")
 
     remove_hash_column(sheet, sheet_data)
@@ -290,8 +296,8 @@ def sync(changed_rows: set[int] | None = None) -> bool:
     finally:
         temp_path.unlink(missing_ok=True)
 
-    if changed_rows:
-        print(f"Lista de ICs atualizada; Gustavo Farias atribuído aos ICs: {', '.join(map(str, sorted(changed_rows)))}.")
+    if owner_updates:
+        print(f"Lista de ICs atualizada; Gustavo Farias atribuído aos ICs: {', '.join(map(str, sorted(owner_updates)))}.")
     else:
         print("Lista de ICs sincronizada; coluna SHA-256 removida.")
     return True
@@ -301,26 +307,69 @@ def ic_snapshot() -> dict[int, str]:
     return {row: digest_for(paths) for row, paths in IC_FILES.items()}
 
 
+def current_commit() -> str:
+    result = subprocess.run(
+        ["git", "rev-parse", "HEAD"],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    return result.stdout.strip() if result.returncode == 0 else ""
+
+
+def rows_in_commit(commit: str) -> set[int]:
+    if not commit:
+        return set()
+    result = subprocess.run(
+        ["git", "diff-tree", "--root", "--no-commit-id", "--name-only", "-r", commit],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    changed_paths = set(result.stdout.splitlines()) if result.returncode == 0 else set()
+    return {
+        row_number
+        for row_number, paths in IC_FILES.items()
+        if changed_paths.intersection(paths)
+    }
+
+
 def watch(interval: float) -> None:
     previous = ic_snapshot()
+    # Na inicialização, também processa o commit mais recente caso o monitor
+    # tenha sido iniciado depois dele.
+    previous_commit = ""
     print("Acompanhando mudanças no DoseSafe; Ctrl+C encerra a sincronização automática.", flush=True)
     pending = not sync()
-    pending_rows: set[int] | None = None
+    pending_rows: set[int] = set()
+    pending_auto = pending
     while True:
         time.sleep(interval)
         current = ic_snapshot()
         changed_rows = {row for row, digest in current.items() if previous.get(row) != digest}
+        commit = current_commit()
+        committed_rows: set[int] = set()
+        if commit and commit != previous_commit:
+            committed_rows = rows_in_commit(commit)
+            previous_commit = commit
         if changed_rows:
             previous = current
             pending = True
-            if pending_rows is not None:
-                pending_rows.update(changed_rows)
+            pending_rows.update(changed_rows)
+        if committed_rows:
+            pending = True
+            pending_rows.update(committed_rows)
+            print(f"Commit detectado; ICs alterados: {', '.join(map(str, sorted(committed_rows)))}.", flush=True)
+        if changed_rows or committed_rows:
             # Aguarda gravações em andamento terminarem antes de recalcular os hashes.
             time.sleep(0.5)
         if pending and not lock_exists():
-            pending = not sync(pending_rows)
+            pending = not sync(None if pending_auto else pending_rows)
             if not pending:
-                pending_rows = set()
+                pending_rows.clear()
+                pending_auto = False
 
 
 def main() -> None:
