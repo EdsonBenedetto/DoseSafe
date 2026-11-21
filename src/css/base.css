@@ -1,0 +1,38 @@
+/* Fundamentos compartilhados pelas telas do DoseSafe. */
+:root {
+  color-scheme: light;
+  --primary: #0284c7;
+  --ink: #0f172a;
+  --muted: #94a3b8;
+  --label: #475569;
+  --border: #e2e8f0;
+  --danger: #ef4444;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+svg.i {
+  width: 1em;
+  height: 1em;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex-shrink: 0;
+}

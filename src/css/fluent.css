@@ -1,0 +1,216 @@
+/* Camada visual Fluent aplicada de forma consistente sobre os estilos das telas. */
+:root {
+  --primary: #0f6cbd;
+  --primary-dark: #115ea3;
+  --ink: #242424;
+  --label: #424242;
+  --muted: #616161;
+  --border: #d1d1d1;
+  --danger: #c50f1f;
+  --fluent-canvas: #f5f5f5;
+  --fluent-surface: #fff;
+  --fluent-hover: #f0f0f0;
+  --fluent-focus: #0f6cbd;
+  --fluent-shadow: 0 2px 4px rgba(0, 0, 0, .08), 0 0 2px rgba(0, 0, 0, .06);
+  font-family: "Segoe UI Variable", "Segoe UI", Arial, sans-serif;
+}
+
+body {
+  color: var(--ink);
+  background: var(--fluent-canvas);
+  font-family: "Segoe UI Variable", "Segoe UI", Arial, sans-serif;
+  line-height: 1.45;
+  -webkit-font-smoothing: antialiased;
+}
+
+button,
+input,
+select,
+textarea {
+  font-family: inherit;
+}
+
+header {
+  background: var(--fluent-surface);
+  border-color: #e5e5e5;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, .04);
+}
+
+.badge {
+  background: var(--primary);
+  border-radius: 8px;
+}
+
+.card,
+.pcard,
+.modal,
+.login-card,
+a.card {
+  background: var(--fluent-surface);
+  border: 1px solid #e5e5e5;
+  border-radius: 8px;
+  box-shadow: var(--fluent-shadow);
+}
+
+.card,
+.login-card {
+  transition: box-shadow .16s ease, border-color .16s ease;
+}
+
+input:not([type="checkbox"]):not([type="radio"]),
+select,
+textarea,
+.ctl,
+.ta,
+.vital {
+  border-color: #8a8886;
+  border-radius: 4px;
+}
+
+input:focus,
+select:focus,
+textarea:focus,
+.ctl:focus-within,
+.ta:focus-within,
+.vital:focus-within {
+  border-color: var(--fluent-focus);
+  box-shadow: 0 0 0 1px var(--fluent-focus);
+  outline: none;
+}
+
+input[type="checkbox"],
+input[type="radio"] {
+  accent-color: var(--primary);
+}
+
+.btn,
+.btn-login,
+.btn-demo,
+.btn-badge-scan {
+  min-height: 36px;
+  border-radius: 4px;
+  font-family: inherit;
+  font-weight: 600;
+  transition: background-color .14s ease, border-color .14s ease, box-shadow .14s ease;
+}
+
+.btn {
+  border-color: #8a8886;
+  color: #242424;
+  background: #fff;
+}
+
+.btn:hover,
+.btn:focus-visible {
+  background: var(--fluent-hover);
+}
+
+.btn.p,
+.btn-login {
+  color: #fff;
+  background: var(--primary);
+  border-color: var(--primary);
+}
+
+.btn.p:hover,
+.btn-login:hover {
+  color: #fff;
+  background: var(--primary-dark);
+  border-color: var(--primary-dark);
+}
+
+.btn.r {
+  color: var(--danger);
+  border-color: #c50f1f;
+}
+
+.btn:focus-visible,
+.btn-login:focus-visible,
+.btn-demo:focus-visible,
+.btn-badge-scan:focus-visible,
+a:focus-visible,
+.tab:focus-visible,
+.chip:focus-visible,
+.rc:focus-visible {
+  outline: 2px solid var(--fluent-focus);
+  outline-offset: 2px;
+}
+
+.tabs {
+  border-color: #d1d1d1;
+}
+
+.tab.act {
+  color: var(--primary);
+  border-color: var(--primary);
+}
+
+.tw,
+.dd,
+.setores,
+.viachip,
+.uopt,
+.st,
+.pcard,
+.medgroup {
+  border-radius: 4px;
+}
+
+table {
+  background: #fff;
+}
+
+th {
+  background: #f0f0f0;
+  color: #424242;
+  letter-spacing: .035em;
+}
+
+tbody tr:hover td {
+  background-color: #f5f5f5;
+}
+
+tr.editing td {
+  background: #eff6fc;
+}
+
+#toast {
+  border-radius: 4px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, .18);
+}
+
+.login-card {
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, .14);
+}
+
+body:has(.login-card) {
+  background: #f5f5f5;
+}
+
+.form-group label {
+  color: #424242;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.form-group input {
+  border-radius: 4px;
+  background: #fff;
+}
+
+.demo-hint,
+.success-panel {
+  border-radius: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
+}

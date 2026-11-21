@@ -3,89 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="../css/base.css">
+<link rel="stylesheet" href="../css/triagem-hospitalar-2.css">
+<link rel="stylesheet" href="../css/fluent.css">
 <title>Sistema de Triagem Hospitalar</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&display=swap" rel="stylesheet">
-<style>
-:root{--primary:#0284c7;--ink:#0f172a;--muted:#94a3b8;--label:#475569;--border:#e2e8f0;--tint:#f0f9ff;--danger:#ef4444}
-*{box-sizing:border-box;margin:0;padding:0;font-family:Geist,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
-body{background:#f8fafc;color:var(--ink);min-height:100vh}
-svg.i{width:1em;height:1em;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
-header{background:#fff;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;padding:16px 32px;gap:16px}
-.logo{display:flex;gap:12px;align-items:center}
-.badge{background:var(--primary);color:#fff;width:40px;height:40px;border-radius:10px;display:grid;place-items:center;font-size:24px}
-.logo h1{font-size:18px;font-weight:700}
-.logo small{display:block;margin-top:2px;font-size:11px;font-weight:500;color:var(--primary);text-transform:uppercase}
-.user{display:flex;gap:16px;align-items:center;text-align:right}
-.user b{display:block;font-size:14px;font-weight:600}
-.user span{font-size:12px;color:var(--label)}
-.avatar{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#0284c7,#059669);color:#fff;display:grid;place-items:center;font-weight:600;font-size:15px}
-main{padding:32px;display:flex;flex-direction:column;gap:24px}
-.grid{display:flex;gap:24px;align-items:stretch}
-.grid>.card:first-child{flex:1;min-width:0}
-.grid>.card:last-child{width:420px;flex-shrink:0}
-.card{background:#fff;border:1px solid var(--border);border-radius:16px;padding:28px;display:flex;flex-direction:column;gap:20px}
-.card-h{display:flex;gap:12px;align-items:center;padding-bottom:20px;border-bottom:1px solid var(--border)}
-.ico{background:var(--tint);color:var(--primary);width:32px;height:32px;border-radius:8px;display:grid;place-items:center;font-size:18px}
-.card-h h2{font-size:16px;font-weight:600}
-.card-h p{font-size:12px;color:var(--muted);margin-top:2px}
-.stack{display:flex;flex-direction:column;gap:16px}
-.row{display:flex;gap:16px;align-items:flex-end}
-.field{display:flex;flex-direction:column;gap:6px;flex:1;min-width:0}
-label,.lbl{font-size:13px;font-weight:500;color:var(--label)}
-label i{color:var(--danger);font-style:normal;margin-left:4px}
-.hint{font-size:11px;color:var(--muted)}
-input[type=text],input[type=number],textarea{width:100%;background:#fff;border:1px solid var(--border);border-radius:8px;padding:10px 14px;font-size:14px;color:var(--ink);outline:none;transition:.15s}
-input::placeholder,textarea::placeholder{color:var(--muted)}
-input:focus,textarea:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(2,132,199,.15)}
-.invalid{border-color:var(--danger)!important}
-.err{font-size:11px;color:var(--danger);min-height:0}
-textarea{height:160px;resize:vertical;line-height:1.4}
-.btn{display:flex;gap:8px;align-items:center;justify-content:center;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;padding:14px 24px;border:1px solid var(--border);background:#fff;color:var(--label);transition:.15s}
-.btn:hover{background:#f8fafc}
-.btn.p{background:var(--primary);border-color:var(--primary);color:#fff;padding:14px 28px}
-.btn.p:hover{background:#0369a1}
-.btn.s{background:var(--tint);border-color:var(--primary);color:var(--primary);height:44px;padding:0 20px;white-space:nowrap}
-.btn.s:hover{background:#e0f2fe}
-.vital{display:flex;align-items:center;gap:8px;border:1px solid var(--border);border-radius:8px;padding:0 12px;background:#fff}
-.vital:focus-within{border-color:var(--primary);box-shadow:0 0 0 3px rgba(2,132,199,.15)}
-.vital .i{color:var(--muted);font-size:16px}
-.vital input{border:0;box-shadow:none!important;padding:10px 0;font-weight:500}
-.vital span{font-size:12px;font-weight:600;color:var(--muted)}
-.chips{display:flex;flex-wrap:wrap;gap:8px}
-.chip{background:#fff;border:1px solid var(--primary);color:var(--primary);border-radius:999px;padding:8px 12px;font-size:12px;font-weight:600;cursor:pointer;transition:.15s}
-.chip:hover{background:var(--tint)}
-.chip.on{background:var(--primary);color:#fff}
-.risk{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}
-.rc{background:#fff;border:1px solid var(--border);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:12px;cursor:pointer;text-align:left;transition:.15s;border-width:1px}
-.rc:hover{transform:translateY(-1px);box-shadow:0 4px 10px rgba(15,23,42,.06)}
-.rt{display:flex;justify-content:space-between;align-items:center;min-height:24px}
-.pill{color:#fff;font-size:10px;font-weight:700;text-transform:uppercase;padding:4px 10px;border-radius:999px}
-.tick{display:none;width:18px;height:18px;border-radius:50%;color:#fff;place-items:center;font-size:12px}
-.rc b{font-size:13px;font-weight:600;display:block;margin-bottom:4px}
-.rc small{font-size:11px;color:var(--label);line-height:1.3}
-.rc.sel{border-width:2px;padding:15px}
-.rc.sel .tick{display:grid}
-.red .pill{background:#ef4444}.red b{color:#991b1b}.red.sel{background:#fef2f2;border-color:#ef4444}.red .tick{background:#ef4444}
-.orange .pill{background:#f97316}.orange b{color:#9a3412}.orange.sel{background:#fff7ed;border-color:#f97316}.orange .tick{background:#f97316}
-.yellow .pill{background:#eab308}.yellow b{color:#854d0e}.yellow.sel{background:#fefce8;border-color:#eab308;box-shadow:0 4px 6px rgba(234,179,8,.12)}.yellow .tick{background:#eab308}
-.green .pill{background:#22c55e}.green b{color:#166534}.green.sel{background:#f0fdf4;border-color:#22c55e}.green .tick{background:#22c55e}
-.blue .pill{background:#3b82f6}.blue b{color:#1e40af}.blue.sel{background:#eff6ff;border-color:#3b82f6}.blue .tick{background:#3b82f6}
-.status{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
-.st{display:flex;gap:12px;align-items:center;border:1px solid var(--border);border-radius:8px;padding:12px 16px;cursor:pointer;font-size:14px;background:#fff;transition:.15s}
-.st input{display:none}
-.dot{width:18px;height:18px;border-radius:50%;border:1px solid var(--muted);background:#fff;flex-shrink:0;transition:.15s}
-.st:has(input:checked){background:var(--tint);border-color:var(--primary);color:var(--primary);font-weight:600}
-.st:has(input:checked) .dot{border:5px solid var(--primary)}
-footer{display:flex;justify-content:space-between;align-items:center;padding-top:8px;gap:16px;flex-wrap:wrap}
-.note{display:flex;gap:8px;align-items:center;font-size:12px;color:var(--muted)}
-.actions{display:flex;gap:16px}
-#toast{position:fixed;bottom:24px;left:50%;transform:translate(-50%,20px);background:var(--ink);color:#fff;padding:14px 20px;border-radius:10px;font-size:14px;opacity:0;pointer-events:none;transition:.25s;max-width:calc(100% - 32px);box-shadow:0 10px 25px rgba(0,0,0,.25);z-index:9}
-#toast.show{opacity:1;transform:translate(-50%,0)}
-#toast.bad{background:#b91c1c}
-@media(max-width:980px){.grid{flex-direction:column}.grid>.card:last-child{width:100%}.risk{grid-template-columns:repeat(2,1fr)}.status{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:600px){header{padding:14px 16px}main{padding:16px}.user div{display:none}.row{flex-direction:column;align-items:stretch}.card{padding:20px}.risk,.status{grid-template-columns:1fr}.actions,.actions .btn{width:100%}.logo h1{font-size:15px}}
-</style>
 <script src="../js/auth.js"></script>
 <script>DS.guard({setor:"enfermagem:Triagem"})</script>
 </head>
@@ -162,68 +85,8 @@ footer{display:flex;justify-content:space-between;align-items:center;padding-top
 </main>
 <div id="toast" role="status"></div>
 
-<script>
-const $=s=>document.querySelector(s);
-const RISKS=[["red","Vermelho","Emergência (Atendimento imediato)"],["orange","Laranja","Muito Urgente (Atendimento em até 10min)"],["yellow","Amarelo","Urgente (Atendimento em até 60min)"],["green","Verde","Pouco Urgente (Atendimento em até 120min)"],["blue","Azul","Não Urgente (Atendimento em até 240min)"]];
-const STATUS=["Aguardando Médico","Em Atendimento","Medicação","Alta"];
-const SYMPTOMS=["Dor de Cabeça","Febre","Náusea","Tontura","Dor no Peito","Falta de Ar","Dor Abdominal","Vômito"];
-// Base simulada de pacientes (substitua por chamada à sua API/prontuário)
-const PACIENTES={"52998224725":{nome:"Ana Beatriz Souza",dn:"14/03/1988"},"11144477735":{nome:"Carlos Eduardo Lima",dn:"02/11/1975"}};
-let risk="yellow";const sel=new Set();
 
-// Render
-$("#risk").innerHTML=RISKS.map(([c,t,d])=>`<button type="button" class="rc ${c}${c===risk?" sel":""}" data-r="${c}" aria-pressed="${c===risk}"><div class="rt"><span class="pill">${t}</span><span class="tick"><svg class="i" viewBox="0 0 24 24" style="stroke-width:3"><path d="M20 6 9 17l-5-5"/></svg></span></div><div><b>${t}</b><small>${d}</small></div></button>`).join("");
-$("#status").innerHTML=STATUS.map((s,i)=>`<label class="st"><input type="radio" name="status" value="${s}"${i?"":" checked"}><span class="dot"></span>${s}</label>`).join("");
-$("#chips").innerHTML=SYMPTOMS.map(s=>`<button type="button" class="chip" aria-pressed="false">${s}</button>`).join("");
 
-// Interações
-$("#risk").onclick=e=>{const b=e.target.closest(".rc");if(!b)return;risk=b.dataset.r;document.querySelectorAll(".rc").forEach(x=>{const on=x===b;x.classList.toggle("sel",on);x.setAttribute("aria-pressed",on)})};
-$("#chips").onclick=e=>{const b=e.target.closest(".chip");if(!b)return;const t=b.textContent;sel.has(t)?sel.delete(t):sel.add(t);b.classList.toggle("on",sel.has(t));b.setAttribute("aria-pressed",sel.has(t))};
-
-const digits=v=>v.replace(/\D/g,"");
-$("#cpf").oninput=e=>{let v=digits(e.target.value).slice(0,11);v=v.replace(/(\d{3})(\d)/,"$1.$2").replace(/(\d{3})(\d)/,"$1.$2").replace(/(\d{3})(\d{1,2})$/,"$1-$2");e.target.value=v};
-$("#dn").oninput=e=>{let v=digits(e.target.value).slice(0,8);v=v.replace(/(\d{2})(\d)/,"$1/$2").replace(/(\d{2})(\d)/,"$1/$2");e.target.value=v};
-$("#pa").oninput=e=>{let v=e.target.value.replace(/[^\d/]/g,"");const [a,...r]=v.split("/");v=r.length?a.slice(0,3)+"/"+r.join("").slice(0,3):a.length>3?a.slice(0,3)+"/"+a.slice(3,6):a;e.target.value=v};
-
-function cpfOk(c){c=digits(c);if(c.length!==11||/^(\d)\1+$/.test(c))return false;for(let t=9;t<11;t++){let s=0;for(let i=0;i<t;i++)s+=c[i]*(t+1-i);if(((s*10)%11)%10!=c[t])return false}return true}
-function dateOk(v){const m=v.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);if(!m)return false;const d=new Date(+m[3],m[2]-1,+m[1]);return d.getFullYear()==m[3]&&d.getMonth()==m[2]-1&&d.getDate()==m[1]&&d<=new Date()&&m[3]>=1900}
-
-let tt;function toast(msg,bad){const t=$("#toast");t.textContent=msg;t.className="show"+(bad?" bad":"");clearTimeout(tt);tt=setTimeout(()=>t.className="",4200)}
-function flag(id,bad){$(id).classList.toggle("invalid",bad)}
-
-$("#busca").onclick=()=>{
-  const c=digits($("#cpf").value);
-  if(!cpfOk(c)){flag("#cpf",true);return toast("Informe um CPF válido para buscar.",true)}
-  flag("#cpf",false);
-  const p=PACIENTES[c];
-  if(p){$("#nome").value=p.nome;$("#dn").value=p.dn;flag("#nome",false);flag("#dn",false);toast("Paciente encontrado: "+p.nome)}
-  else toast("Paciente não encontrado. Preencha os dados manualmente.",true)
-};
-
-function reset(){$("#f").reset();sel.clear();document.querySelectorAll(".chip").forEach(c=>{c.classList.remove("on");c.setAttribute("aria-pressed","false")});document.querySelectorAll(".invalid").forEach(x=>x.classList.remove("invalid"));risk="yellow";document.querySelectorAll(".rc").forEach(x=>{const on=x.dataset.r===risk;x.classList.toggle("sel",on);x.setAttribute("aria-pressed",on)})}
-$("#cancel").onclick=()=>{reset();toast("Triagem cancelada.")};
-
-$("#f").onsubmit=e=>{
-  e.preventDefault();
-  const bad=[];
-  const chk=(id,ok,msg)=>{flag(id,!ok);if(!ok)bad.push(msg)};
-  chk("#cpf",cpfOk($("#cpf").value),"CPF inválido");
-  chk("#nome",$("#nome").value.trim().split(/\s+/).filter(Boolean).length>=2,"informe o nome completo");
-  chk("#dn",dateOk($("#dn").value),"data de nascimento inválida");
-  const t=$("#temp").value;if(t)chk("#temp",+t>=30&&+t<=45,"temperatura fora do intervalo (30–45 °C)");else flag("#temp",false);
-  if(bad.length)return toast("Revise: "+bad.join("; ")+".",true);
-  const reg={
-    cpf:$("#cpf").value,nome:$("#nome").value.trim(),nascimento:$("#dn").value,
-    sinaisVitais:{pressao:$("#pa").value,temperatura:$("#temp").value,peso:$("#peso").value},
-    sintomas:{descricao:$("#desc").value.trim(),inicio:$("#inicio").value.trim(),comuns:[...sel]},
-    classificacao:RISKS.find(r=>r[0]===risk)[1],
-    status:document.querySelector('input[name=status]:checked').value,
-    registradoEm:new Date().toISOString(),profissional:"Enf. Maria Silva — Coren 123.456"
-  };
-  console.log("Triagem registrada:",reg); // envie `reg` para sua API aqui
-  toast(`Triagem registrada: ${reg.nome} — ${reg.classificacao} — ${reg.status}`);
-  reset()
-};
-</script>
+<script src="../js/pages/triagem-hospitalar-2.js"></script>
 </body>
 </html>
