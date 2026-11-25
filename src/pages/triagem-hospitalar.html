@@ -11,6 +11,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="../js/auth.js"></script>
+<script src="../js/data.js"></script>
 <script>DS.guard({setor:"enfermagem:Triagem"})</script>
 <script src="../js/theme.js"></script>
 </head>
@@ -21,7 +22,7 @@
     <div><h1>Sistema de Triagem Hospitalar</h1><small>Pronto Atendimento &amp; Emergência</small></div>
   </div>
   <div class="user">
-    <div><b>Enf. Maria Silva</b><span>Coren: 123.456 — Triagem</span></div>
+    <div><b>Profissional autenticado</b><span>Triagem</span></div>
     <div class="avatar">MS</div>
   </div>
 </header>
@@ -30,7 +31,7 @@
   <form id="f" novalidate style="display:contents">
   <div class="grid">
     <section class="card">
-      <div class="card-h"><div class="ico"><svg class="i" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="12" cy="10" r="3"/><path d="M7 21v-2a4 4 0 0 1 4-4h2a4 4 0 0 1 4 4v2"/></svg></div><div><h2>Dados do Paciente</h2><p>Identificação e verificação cadastral no SUS/Prontuário</p></div></div>
+      <div class="card-h"><div class="ico"><svg class="i" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="12" cy="10" r="3"/><path d="M7 21v-2a4 4 0 0 1 4-4h2a4 4 0 0 1 4 4v2"/></svg></div><div><h2>Dados do Paciente</h2><p>Cadastro demonstrativo; sem consulta a SUS ou prontuário</p></div></div>
       <div class="stack">
         <div class="row">
           <div class="field"><label for="cpf">CPF<i>*</i></label><input type="text" id="cpf" inputmode="numeric" maxlength="14" placeholder="000.000.000-00" autocomplete="off"><span class="hint">Digite apenas números para consulta rápida</span></div>
@@ -77,7 +78,7 @@
   </section>
 
   <footer>
-    <div class="note"><svg class="i" viewBox="0 0 24 24" style="font-size:14px"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>Os dados registrados serão anexados diretamente ao Prontuário Eletrônico do Paciente.</div>
+    <div class="note"><svg class="i" viewBox="0 0 24 24" style="font-size:14px"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>Triagens salvas localmente neste navegador; ainda não há integração com prontuário eletrônico.</div>
     <div class="actions">
       <button type="button" class="btn" id="cancel">Cancelar</button>
       <button type="submit" class="btn p"><svg class="i" viewBox="0 0 24 24"><path d="M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z"/><path d="M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7M7 3v4a1 1 0 0 0 1 1h7"/></svg>Registrar Triagem</button>

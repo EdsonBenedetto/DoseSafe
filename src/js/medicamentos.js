@@ -11,7 +11,7 @@
     try { m = JSON.parse(localStorage.getItem(MK)); } catch (e) {}
     return m || [];
   }
-  function save(l) { try { localStorage.setItem(MK, JSON.stringify(l)); } catch (e) {} }
+  function save(l) { try { localStorage.setItem(MK, JSON.stringify(l)); return true; } catch (e) { return false; } }
   function find(nome) {
     const n = (nome || "").trim().toLowerCase();
     return list().find(m => m.nome.toLowerCase() === n);

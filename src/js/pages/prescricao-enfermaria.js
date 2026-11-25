@@ -1,5 +1,5 @@
 const $=s=>document.querySelector(s);
-const ENFERMEIRA="Enf. Maria Silva";
+const ENFERMEIRA=(DS.session()||{nome:"Profissional não identificado"}).nome;
 const p2=n=>String(n).padStart(2,"0");
 const fmt=d=>`${p2(d.getDate())}/${p2(d.getMonth()+1)} ${p2(d.getHours())}:${p2(d.getMinutes())}`;
 const fmtL=d=>`${d.getFullYear()}-${p2(d.getMonth()+1)}-${p2(d.getDate())}T${p2(d.getHours())}:${p2(d.getMinutes())}`;
@@ -15,8 +15,8 @@ function mkDoses(r){
   return out;
 }
 const f0=nowRound();
-let rx=[];
-let nextId=1,editId=null;
+let rx=DSData.read("ds_prescricoes_enfermaria",[]).map(r=>({...r,first:r.first?new Date(r.first):null,doses:(r.doses||[]).map(d=>({...d,t:new Date(d.t),adm:d.adm?new Date(d.adm):null})),sos:(r.sos||[]).map(d=>new Date(d))}));
+let nextId=rx.reduce((n,r)=>Math.max(n,(r.id||0)+1),1),editId=null;
  
 (()=>{const b=new Date(1985,2,15),n=new Date();let a=n.getFullYear()-b.getFullYear();if(n<new Date(n.getFullYear(),2,15))a--;$("#nasc").textContent=`15/03/1985 (${a} anos)`})();
  
@@ -99,8 +99,10 @@ $("#f").addEventListener("submit",e=>{
     if(!confirm(`ALERTA DE SEGURANÇA DA PRESCRIÇÃO\n\n${txt}\n\nDeseja prescrever mesmo assim? Isso ficará registrado.`))return;
   }
   const item={med:m,dose,un:$("#un").value,via:$("#via").value,freq:fr,int:fr==="int"?iv:null,first:fr==="sos"?null:fs,obs:$("#obs").value.trim(),alerta:grave.length?grave.map(a=>a.msg).join(" | "):""};
-  if(editId){const r=rx.find(x=>x.id===editId);Object.assign(r,item,{sent:false});r.doses=mkDoses(r);toast("Prescrição atualizada. Reenvie à enfermaria.")}
-  else{const r={id:nextId++,...item,sent:false,susp:false,sos:[]};r.doses=mkDoses(r);rx.push(r);toast("Prescrição adicionada.")}
+  if(editId){const r=rx.find(x=>x.id===editId);Object.assign(r,item,{sent:false});r.doses=mkDoses(r);}
+  else{const r={id:nextId++,...item,sent:false,susp:false,sos:[]};r.doses=mkDoses(r);rx.push(r);}
+  if(!DSData.write("ds_prescricoes_enfermaria",rx))return toast("Não foi possível salvar a prescrição neste navegador.",true);
+  toast(editId?"Prescrição atualizada. Reenvie à enfermaria.":"Prescrição adicionada.");
   resetForm();
 });
  
@@ -108,7 +110,7 @@ $("#tb").addEventListener("click",e=>{
   const ed=e.target.closest("[data-e]"),dl=e.target.closest("[data-x]");
   if(ed){const r=rx.find(x=>x.id==ed.dataset.e);editId=r.id;med.value=r.med;$("#dose").value=r.dose;$("#un").value=r.un;$("#via").value=r.via;$("#freq").value=r.freq;$("#int").value=r.int||"";$("#first").value=r.first?fmtL(r.first):fmtL(nowRound());$("#obs").value=r.obs;syncFreq();
     $("#ftitle").textContent="Editar Prescrição";$("#add span").textContent="Salvar Alteração";$("#cancelEdit").hidden=false;render();med.focus();hideDD()}
-  if(dl){const r=rx.find(x=>x.id==dl.dataset.x);if(!confirm(`Suspender “${r.med}”? As doses pendentes serão canceladas e a suspensão não pode ser desfeita.`))return;r.susp=true;if(editId===r.id)resetForm();else render();toast("Prescrição suspensa.")}
+  if(dl){const r=rx.find(x=>x.id==dl.dataset.x);if(!confirm(`Suspender “${r.med}”? As doses pendentes serão canceladas e a suspensão não pode ser desfeita.`))return;r.susp=true;if(!DSData.write("ds_prescricoes_enfermaria",rx)){r.susp=false;return toast("Não foi possível salvar a suspensão.",true)}if(editId===r.id)resetForm();else render();toast("Prescrição suspensa.")}
 });
 $("#cancelEdit").onclick=resetForm;
  
@@ -117,8 +119,8 @@ function checagem(r,horario){
 }
 $("#tl").addEventListener("click",e=>{
   const a=e.target.closest("[data-adm]"),s=e.target.closest("[data-sos]");
-  if(a){const [id,i]=a.dataset.adm.split(":").map(Number);const r=rx.find(x=>x.id===id),d=r.doses[i];if(!checagem(r,fmt(d.t)))return;d.adm=new Date();renderAll();toast(`${r.med} administrada às ${p2(d.adm.getHours())}:${p2(d.adm.getMinutes())} (${ENFERMEIRA}).`)}
-  if(s){const r=rx.find(x=>x.id==s.dataset.sos);if(!checagem(r,"Se necessário (agora)"))return;r.sos.push(new Date());renderAll();toast(`${r.med} (SOS) registrada.`)}
+  if(a){const [id,i]=a.dataset.adm.split(":").map(Number);const r=rx.find(x=>x.id===id),d=r.doses[i];if(!checagem(r,fmt(d.t)))return;d.adm=new Date();if(!DSData.write("ds_prescricoes_enfermaria",rx))return toast("Não foi possível salvar o registro da administração.",true);renderAll();toast(`${r.med} administrada às ${p2(d.adm.getHours())}:${p2(d.adm.getMinutes())} (${ENFERMEIRA}).`)}
+  if(s){const r=rx.find(x=>x.id==s.dataset.sos);if(!checagem(r,"Se necessário (agora)"))return;r.sos.push(new Date());if(!DSData.write("ds_prescricoes_enfermaria",rx))return toast("Não foi possível salvar o registro da administração.",true);renderAll();toast(`${r.med} (SOS) registrada.`)}
 });
 function renderAll(){render()}
  
@@ -127,10 +129,10 @@ $("#send").onclick=()=>{
   if(!pend.length)return toast("Não há prescrições novas para enviar.",true);
   if(!confirm(`Enviar ${pend.length} prescrição(ões) à enfermaria? A equipe passará a ver os horários de administração.`))return;
   pend.forEach(r=>r.sent=true);
-  console.log("Prescrição enviada à enfermaria:",{paciente:"João da Silva Santos",leito:"Enfermaria 02 — Leito 04",medico:"Dr. Carlos Mendes — CRM 123456-SP",prescricoes:pend,enviadoEm:new Date().toISOString()}); // envie para sua API aqui
-  render();toast("Prescrição enviada à enfermaria. Horários liberados para checagem.");
+  if(!DSData.write("ds_prescricoes_enfermaria",rx)){pend.forEach(r=>r.sent=false);return toast("Não foi possível salvar o envio.",true)}
+  render();toast("Prescrição marcada como enviada neste navegador. A enfermaria não recebe os dados automaticamente.");
 };
-$("#voltar").onclick=()=>{if((rx.some(r=>!r.sent&&!r.susp)||med.value)&&!confirm("Existem prescrições não enviadas. Voltar ao painel mesmo assim?"))return;toast("Voltando ao painel (simulado).")};
+$("#voltar").onclick=()=>{if((rx.some(r=>!r.sent&&!r.susp)||med.value)&&!confirm("Existem prescrições ainda não marcadas como enviadas. Voltar ao painel mesmo assim?"))return;location.href="inicio.html"};
  
 $("#first").value=fmtL(nowRound());syncFreq();render();
 setInterval(renderTL,60000);

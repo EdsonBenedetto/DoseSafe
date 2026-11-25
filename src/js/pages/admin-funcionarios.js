@@ -65,7 +65,7 @@ $("#f").addEventListener("submit",e=>{
     $("#cred").innerHTML=`<b>${esc(nome)} cadastrado.</b><br>Já pode entrar com a matrícula <b>${esc(mat)}</b> e a senha definida.`;
     $("#cred").classList.add("show");toast("Funcionário cadastrado.");
   }
-  save();const keep=$("#cred").classList.contains("show");resetForm();if(keep)$("#cred").classList.add("show");render();
+  if(!save())return toast("Não foi possível salvar. Verifique o espaço disponível no navegador.",true);const keep=$("#cred").classList.contains("show");resetForm();if(keep)$("#cred").classList.add("show");render();
 });
  
 function render(){
@@ -86,7 +86,7 @@ $("#tb").addEventListener("click",e=>{
   if(tg){
     const s=staff.find(x=>x.mat===tg.dataset.t);
     if(s.ativo&&!confirm(`Desativar ${s.nome}? O acesso ao sistema será bloqueado imediatamente.`))return;
-    s.ativo=!s.ativo;save();render();toast(s.ativo?`${s.nome} reativado.`:`${s.nome} desativado.`);
+    s.ativo=!s.ativo;if(!save()){s.ativo=!s.ativo;return toast("Não foi possível salvar. Verifique o espaço disponível no navegador.",true)}render();toast(s.ativo?`${s.nome} reativado.`:`${s.nome} desativado.`);
   }
 });
  
@@ -141,7 +141,7 @@ $("#fm").addEventListener("submit",e=>{
   };
   if(mEditing){Object.assign(meds.find(m=>m.nome===mEditing),d);toast("Medicamento atualizado.")}
   else{meds.push({...d,ativo:true});toast("Medicamento cadastrado.")}
-  saveMeds();resetMedForm();renderMeds();
+  if(!saveMeds())return toast("Não foi possível salvar. Verifique o espaço disponível no navegador.",true);resetMedForm();renderMeds();
 });
  
 function renderMeds(){
@@ -162,7 +162,7 @@ $("#mtb").addEventListener("click",e=>{
   }
   if(tg){
     const m=meds.find(x=>x.nome===tg.dataset.mt);
-    m.ativo=!(m.ativo!==false);saveMeds();renderMeds();
+    m.ativo=!(m.ativo!==false);if(!saveMeds()){m.ativo=!(m.ativo!==false);return toast("Não foi possível salvar. Verifique o espaço disponível no navegador.",true)}renderMeds();
     toast(m.ativo?`${m.nome} reativado — volta a aparecer nas buscas.`:`${m.nome} desativado — some das buscas, mas o histórico é mantido.`);
   }
 });

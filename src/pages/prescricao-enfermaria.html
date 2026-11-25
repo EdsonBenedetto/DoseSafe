@@ -12,6 +12,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="../js/auth.js"></script>
 <script src="../js/medicamentos.js"></script>
+<script src="../js/data.js"></script>
 <script>DS.guard({setor:"medica:Prescrição"})</script>
 <script src="../js/theme.js"></script>
 </head>
@@ -21,7 +22,7 @@
     <div class="badge"><svg class="i" viewBox="0 0 24 24"><path d="M11 2a2 2 0 0 0-2 2v5H4a2 2 0 0 0-2 2v2c0 1.1.9 2 2 2h5v5c0 1.1.9 2 2 2h2a2 2 0 0 0 2-2v-5h5a2 2 0 0 0 2-2v-2a2 2 0 0 0-2-2h-5V4a2 2 0 0 0-2-2Z"/></svg></div>
     <div><h1>Sistema Hospitalar</h1><small>Prescrição Hospitalar · Enfermaria</small></div>
   </div>
-  <div class="user"><div><b>Dr. Carlos Mendes</b><span>CRM 123456-SP — Clínico Geral</span></div><div class="avatar">CM</div></div>
+  <div class="user"><div><b>Profissional autenticado</b><span>Prescrição e checagem simuladas</span></div><div class="avatar">PA</div></div>
 </header>
  
 <main>
@@ -74,7 +75,7 @@
         <div class="title"><svg class="i" viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>Prescrições do Atendimento</div>
         <hr class="hr">
         <div class="tw"><table><thead><tr><th>Medicamento</th><th style="width:120px">Dose / Via</th><th style="width:120px">Frequência</th><th style="width:120px">Situação</th><th style="width:100px">Ações</th></tr></thead><tbody id="tb"></tbody></table></div>
-        <div class="legend"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>Após enviar, a equipe de enfermagem administra a medicação no leito do paciente e registra cada dose.</div>
+        <div class="legend"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>Fluxo de envio e checagem demonstrativo; os dados ficam apenas nesta tela e neste navegador.</div>
       </section>
  
       <section class="card">

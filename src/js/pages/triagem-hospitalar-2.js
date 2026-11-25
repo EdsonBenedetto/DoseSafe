@@ -47,15 +47,18 @@ $("#f").onsubmit=e=>{
   chk("#dn",dateOk($("#dn").value),"data de nascimento inválida");
   const t=$("#temp").value;if(t)chk("#temp",+t>=30&&+t<=45,"temperatura fora do intervalo (30–45 °C)");else flag("#temp",false);
   if(bad.length)return toast("Revise: "+bad.join("; ")+".",true);
+  const user=DS.session();
   const reg={
     cpf:$("#cpf").value,nome:$("#nome").value.trim(),nascimento:$("#dn").value,
     sinaisVitais:{pressao:$("#pa").value,temperatura:$("#temp").value,peso:$("#peso").value},
     sintomas:{descricao:$("#desc").value.trim(),inicio:$("#inicio").value.trim(),comuns:[...sel]},
     classificacao:RISKS.find(r=>r[0]===risk)[1],
     status:document.querySelector('input[name=status]:checked').value,
-    registradoEm:new Date().toISOString(),profissional:"Enf. Maria Silva — Coren 123.456"
+    registradoEm:new Date().toISOString(),profissional:user?`${user.nome} — ${user.cargo}`:"Profissional não identificado"
   };
-  console.log("Triagem registrada:",reg); // envie `reg` para sua API aqui
+  const triagens=DSData.read("ds_triagens",[]);
+  triagens.push(reg);
+  if(!DSData.write("ds_triagens",triagens))return toast("Não foi possível salvar. Verifique o espaço disponível no navegador.",true);
   toast(`Triagem registrada: ${reg.nome} — ${reg.classificacao} — ${reg.status}`);
   reset()
 };

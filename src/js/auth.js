@@ -10,7 +10,7 @@
   ];
   // Telas do sistema e o setor exigido para cada uma
   const PAGES = [
-    { f: "triagem-hospitalar (2).html", n: "Triagem", d: "Cadastro e classificação de risco do paciente", s: "enfermagem:Triagem" },
+    { f: "triagem-hospitalar.html", n: "Triagem", d: "Cadastro e classificação de risco do paciente", s: "enfermagem:Triagem" },
     { f: "central-enfermagem.html", n: "Medicação", d: "Central de enfermagem: aplicar a medicação prescrita", s: "enfermagem:Medicação" },
     { f: "prescricao-enfermaria.html", n: "Prescrição (pronto atendimento)", d: "Prescrever medicação para a enfermaria", s: "medica:Prescrição" },
     { f: "prescricao-medica.html", n: "Prescrição (receita)", d: "Prescrição médica do atendimento", s: "medica:Prescrição" },
@@ -25,7 +25,7 @@
     s.forEach(x => { if (!x.senha) x.senha = "1234"; }); // cadastros antigos sem senha
     return s;
   }
-  function saveStaff(l) { try { localStorage.setItem(SK, JSON.stringify(l)); } catch (e) {} }
+  function saveStaff(l) { try { localStorage.setItem(SK, JSON.stringify(l)); return true; } catch (e) { return false; } }
 
   // Sempre relê o cadastro: se o admin desativar ou alterar setores, vale no próximo carregamento
   function session() {
@@ -61,6 +61,13 @@
       bar.style.cssText = "position:fixed;left:16px;bottom:16px;z-index:9000;background:#0f172a;color:#fff;font:600 12px/1 -apple-system,Segoe UI,Roboto,sans-serif;padding:10px 14px;border-radius:999px;display:flex;gap:12px;align-items:center;box-shadow:0 4px 12px rgba(0,0,0,.25)";
       bar.innerHTML = '<span></span><a href="inicio.html" style="color:#7dd3fc">Início</a><a href="#" id="dsOut" style="color:#fca5a5">Sair</a>';
       bar.firstChild.textContent = u.nome + " · " + u.cargo;
+      const identity = document.querySelector("header .user");
+      if (identity) {
+        const name = identity.querySelector("b"), detail = identity.querySelector("span"), avatar = identity.querySelector(".avatar");
+        if (name) name.textContent = u.nome;
+        if (detail) detail.textContent = u.cargo + " · Matrícula " + u.mat;
+        if (avatar) avatar.textContent = u.nome.split(/\s+/).slice(0, 2).map(n => n[0]).join("").toUpperCase();
+      }
       document.body.appendChild(bar);
       bar.querySelector("#dsOut").onclick = function (e) { e.preventDefault(); logout(); };
       const ok = o.any || (o.admin ? u.admin : (!u.admin && u.setores.indexOf(o.setor) >= 0));

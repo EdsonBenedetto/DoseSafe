@@ -2,8 +2,8 @@ const $=s=>document.querySelector(s);
 const p2=n=>String(n).padStart(2,"0");
 const stamp=d=>`${p2(d.getDate())}/${p2(d.getMonth()+1)}/${d.getFullYear()} ${p2(d.getHours())}:${p2(d.getMinutes())}`;
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-let rx=[];
-let nextId=1,editId=null,done=false;
+let rx=DSData.read("ds_prescricoes_medicas",[]);
+let nextId=rx.reduce((n,r)=>Math.max(n,(r.id||0)+1),1),editId=null,done=false;
  
 // Idade calculada a partir da data de nascimento
 (()=>{const b=new Date(1985,2,15),n=new Date();let a=n.getFullYear()-b.getFullYear();if(n<new Date(n.getFullYear(),2,15))a--;$("#nasc").textContent=`15/03/1985 (${a} anos)`})();
@@ -59,8 +59,10 @@ $("#f").addEventListener("submit",e=>{
     if(!confirm(`ALERTA DE SEGURANÇA DA PRESCRIÇÃO\n\n${txt}\n\nDeseja prescrever mesmo assim? Isso ficará registrado.`))return;
   }
   const item={med:m,dose,un:$("#un").value,via:$("#via").value,int:iv,obs:$("#obs").value.trim(),alerta:grave.length?grave.map(a=>a.msg).join(" | "):""};
-  if(editId){const r=rx.find(x=>x.id===editId);Object.assign(r,item);toast("Prescrição atualizada.")}
-  else{rx.push({id:nextId++,...item,dt:stamp(new Date())});toast("Prescrição adicionada.")}
+  if(editId){const r=rx.find(x=>x.id===editId);Object.assign(r,item);}
+  else{rx.push({id:nextId++,...item,dt:stamp(new Date())});}
+  if(!DSData.write("ds_prescricoes_medicas",rx))return toast("Não foi possível salvar a prescrição neste navegador.",true);
+  toast(editId?"Prescrição atualizada.":"Prescrição adicionada.");
   resetForm();
 });
  
@@ -68,20 +70,21 @@ $("#tb").addEventListener("click",e=>{
   const ed=e.target.closest("[data-e]"),dl=e.target.closest("[data-x]");
   if(ed){const r=rx.find(x=>x.id==ed.dataset.e);editId=r.id;med.value=r.med;$("#dose").value=r.dose;$("#un").value=r.un;$("#via").value=r.via;$("#int").value=r.int;$("#obs").value=r.obs;
     $("#ftitle").textContent="Editar Prescrição";$("#add span").textContent="Salvar Alteração";$("#cancelEdit").hidden=false;render();med.focus();hideDD()}
-  if(dl){const r=rx.find(x=>x.id==dl.dataset.x);if(!confirm(`Remover “${r.med}” das prescrições?`))return;rx=rx.filter(x=>x.id!==r.id);if(editId===r.id)resetForm();else render();toast("Prescrição removida.")}
+  if(dl){const r=rx.find(x=>x.id==dl.dataset.x);if(!confirm(`Remover “${r.med}” das prescrições?`))return;rx=rx.filter(x=>x.id!==r.id);if(!DSData.write("ds_prescricoes_medicas",rx))return toast("Não foi possível atualizar os dados salvos.",true);if(editId===r.id)resetForm();else render();toast("Prescrição removida.")}
 });
 $("#cancelEdit").onclick=resetForm;
  
-$("#voltar").onclick=()=>{if(!done&&(rx.length||med.value)&&!confirm("Voltar ao painel? Alterações não finalizadas serão mantidas apenas nesta tela."))return;toast("Voltando ao painel (simulado).")};
+$("#voltar").onclick=()=>{if(!done&&(rx.length||med.value)&&!confirm("Voltar ao painel? As prescrições ficam salvas localmente neste navegador."))return;location.href="inicio.html"};
  
 $("#fin").onclick=()=>{
   if(done)return;
   if(!rx.length)return toast("Adicione ao menos uma prescrição antes de finalizar.",true);
   if(!confirm(`Finalizar o atendimento com ${rx.length} prescrição(ões)? Elas serão enviadas à enfermagem.`))return;
-  const payload={paciente:"João da Silva Santos",prontuario:"#854.291-A",medico:"Dr. Carlos Mendes — CRM 123456-SP",prescricoes:rx,finalizadoEm:new Date().toISOString()};
-  console.log("Atendimento finalizado:",payload); // envie `payload` para sua API aqui
+  const user=DS.session();
+  const payload={paciente:"João da Silva Santos",prontuario:"#854.291-A",medico:user?`${user.nome} — ${user.cargo}`:"Profissional não identificado",prescricoes:rx,finalizadoEm:new Date().toISOString()};
+  if(!DSData.write("ds_atendimentos_finalizados",[...DSData.read("ds_atendimentos_finalizados",[]),payload]))return toast("Não foi possível finalizar e salvar o atendimento.",true);
   done=true;$("#fin").disabled=true;$("#add").disabled=true;document.querySelectorAll("#f input,#f select,#f textarea").forEach(x=>x.disabled=true);render();
-  toast("Atendimento finalizado. Prescrições enviadas à enfermagem.");
+  toast("Atendimento finalizado e salvo localmente neste navegador.");
 };
  
 render();
