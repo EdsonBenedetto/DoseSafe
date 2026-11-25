@@ -25,13 +25,13 @@ As páginas continuam independentes, mas a apresentação e o comportamento fica
 - `src/css/fluent.css`: camada visual comum inspirada no Fluent;
 - `src/css/theme.css` e `src/js/theme.js`: tema claro/escuro com preferência salva no navegador;
 - `src/css/<tela>.css`: estilos específicos de cada tela;
-- `src/js/auth.js` e `src/js/medicamentos.js`: serviços compartilhados de autenticação e regras de medicamentos;
+- `src/js/auth.js`, `src/js/data.js` e `src/js/medicamentos.js`: serviços compartilhados de autenticação, armazenamento local e regras de medicamentos;
 - `src/js/pages/<tela>.js`: interações específicas de cada tela.
 
 Os dados continuam armazenados no navegador nesta etapa. A próxima evolução pode introduzir módulos ES e uma ferramenta de build (por exemplo, Vite), mantendo uma migração gradual das telas; para compartilhamento de dados e autenticação segura entre usuários, será necessário também um backend.
 
 ### Sincronização automática da lista de ICs
 
-O workspace do VS Code inicia `tools/sync_ics.py --watch` ao ser aberto. O sincronizador observa mudanças nos arquivos associados a um IC e também commits novos; nos dois casos, registra `Gustavo Farias` como responsável. Essa atribuição segue a convenção definida pela equipe; o sistema de arquivos não identifica a pessoa que editou o arquivo. Como o commit já foi concluído quando detectado, a atualização da planilha fica como alteração local para um commit posterior. Na primeira abertura, autorize a execução da tarefa automática do workspace se o VS Code solicitar.
+O workspace do VS Code inicia `tools/sync_ics.py --watch` ao ser aberto. O sincronizador atualiza a planilha `docs/gc/tabela_mudanças.xlsx`, observa mudanças nos arquivos associados a um IC e também commits novos; nos dois casos, registra `Gustavo Farias` como responsável. Essa atribuição segue a convenção definida pela equipe; o sistema de arquivos não identifica a pessoa que editou o arquivo. Como o commit já foi concluído quando detectado, a atualização da planilha fica como alteração local para um commit posterior. Na primeira abertura, autorize a execução da tarefa automática do workspace se o VS Code solicitar.
 
 Para executar manualmente uma sincronização, use `python3 tools/sync_ics.py`. A planilha deve estar fechada durante a gravação; se estiver aberta no LibreOffice, o sincronizador aguarda o fechamento antes de aplicar a atualização. O modo contínuo pode ser encerrado com `Ctrl+C` no terminal da tarefa.

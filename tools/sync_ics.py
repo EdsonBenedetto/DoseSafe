@@ -21,7 +21,7 @@ import xml.etree.ElementTree as ET
 
 
 ROOT = Path(__file__).resolve().parents[1]
-WORKBOOK = ROOT / "docs/gc/lista_ics.xlsx"
+WORKBOOK = ROOT / "docs/gc/tabela_mudanças.xlsx"
 SHEET_PATH = "xl/worksheets/sheet1.xml"
 LOCK_FILE = WORKBOOK.parent / f".~lock.{WORKBOOK.name}#"
 MAIN_NS = "http://schemas.openxmlformats.org/spreadsheetml/2006/main"
@@ -31,7 +31,7 @@ NS = {"m": MAIN_NS}
 # IC existente -> arquivos que compõem esse item de configuração.
 IC_FILES: dict[int, tuple[str, ...]] = {
     2: ("docs/requisitos/doc_requisitos.pdf",),
-    3: ("docs/gerencia_projeto/plano_projeto.docx",),
+    3: ("docs/gerencia_projeto/Plano_de_Projeto_DoseSafe.pdf",),
     4: ("README.md",),
     5: ("tests/README.md",),
     9: ("src/js/auth.js",),
@@ -42,9 +42,10 @@ IC_FILES: dict[int, tuple[str, ...]] = {
     14: ("src/pages/central-enfermagem.html", "src/css/central-enfermagem.css", "src/js/pages/central-enfermagem.js"),
     15: ("src/pages/prescricao-medica.html", "src/css/prescricao-medica.css", "src/js/pages/prescricao-medica.js"),
     16: ("src/pages/prescricao-enfermaria.html", "src/css/prescricao-enfermaria.css", "src/js/pages/prescricao-enfermaria.js"),
-    17: ("src/pages/triagem-hospitalar (2).html", "src/css/triagem-hospitalar-2.css", "src/js/pages/triagem-hospitalar-2.js"),
+    17: ("src/pages/triagem-hospitalar.html", "src/css/triagem-hospitalar.css", "src/js/pages/triagem-hospitalar.js"),
     18: ("src/css/base.css", "src/css/fluent.css", "src/css/theme.css"),
     19: ("src/js/theme.js",),
+    20: ("src/js/data.js",),
 }
 
 NEW_ROWS = {
@@ -68,6 +69,16 @@ NEW_ROWS = {
         "Equipe",
         "Preferência armazenada no navegador.",
     ),
+    20: (
+        "IC-COD-12",
+        "Persistência local de dados (data.js)",
+        "Código-fonte — JavaScript",
+        "Lê e grava registros do protótipo no armazenamento local do navegador.",
+        "0.1",
+        "Em revisão",
+        "Equipe",
+        "Não sincroniza os dados entre navegadores ou dispositivos.",
+    ),
 }
 
 DESCRIPTION_UPDATES = {
@@ -79,6 +90,25 @@ DESCRIPTION_UPDATES = {
     16: "Organiza medicações, doses, vias, frequências e horários de administração; importa CSS e JavaScript próprios.",
     17: "Registra dados do paciente, sinais vitais, sintomas e classificação de risco; importa CSS e JavaScript próprios.",
 }
+
+NOTES_UPDATES = {
+    15: "Prescrições guardadas localmente neste navegador; ainda não são enviadas para outra tela.",
+    16: "Fluxo de envio e checagem demonstrativo; os dados ficam nesta tela e neste navegador.",
+    17: "Arquivos alinhados com triagem-hospitalar.html, triagem-hospitalar.css e triagem-hospitalar.js.",
+}
+
+EXPECTED_HEADERS = {
+    "A1": "ID único do IC",
+    "B1": "Nome",
+    "C1": "Categoria",
+    "D1": "Descrição / Função",
+    "E1": "Data",
+    "F1": "Versão",
+    "G1": "Situação",
+    "H1": "Responsavel",
+    "I1": "Observações",
+}
+NEW_ROW_COLUMNS = ("A", "B", "C", "D", "F", "G", "H", "I")
 
 
 def qname(name: str) -> str:
@@ -135,11 +165,10 @@ def find_cell(row: ET.Element, address: str) -> ET.Element | None:
 
 def style_for(sheet_data: ET.Element, row_number: int, column: str) -> str | None:
     source_row = find_row(sheet_data, row_number)
-    source_column = "H" if column == "I" else column
-    source = find_cell(source_row, f"{source_column}{row_number}")
+    source = find_cell(source_row, f"{column}{row_number}")
     if source is None:
         # Use the matching cell style from the preceding populated data row.
-        source = find_cell(find_row(sheet_data, 17), f"{source_column}17")
+        source = find_cell(find_row(sheet_data, 17), f"{column}17")
     return source.get("s") if source is not None else None
 
 
@@ -190,39 +219,6 @@ def sheet_shared_strings(archive: zipfile.ZipFile) -> list[str]:
     return ["".join(node.text or "" for node in item.findall(".//m:t", NS)) for item in root.findall("m:si", NS)]
 
 
-def find_changed_rows(sheet_data: ET.Element, shared_strings: list[str]) -> set[int]:
-    changed = set()
-    for row_number, paths in IC_FILES.items():
-        row = find_row(sheet_data, row_number)
-        recorded = cell_text(row, f"I{row_number}", shared_strings)
-        if recorded and recorded != digest_for(paths):
-            changed.add(row_number)
-    return changed
-
-
-def remove_hash_column(sheet: ET.Element, sheet_data: ET.Element) -> None:
-    for row in sheet_data.findall("m:row", NS):
-        for cell in list(row.findall("m:c", NS)):
-            if cell.get("r", "").startswith("I"):
-                row.remove(cell)
-
-    cols = sheet.find("m:cols", NS)
-    if cols is not None:
-        for col in list(cols.findall("m:col", NS)):
-            start, end = int(col.get("min", "0")), int(col.get("max", "0"))
-            if start <= 9 <= end:
-                cols.remove(col)
-                if start < 9:
-                    ET.SubElement(cols, qname("col"), {**col.attrib, "max": "8"})
-                if end > 9:
-                    ET.SubElement(cols, qname("col"), {**col.attrib, "min": "10"})
-
-    for element in sheet.iter():
-        ref = element.get("ref")
-        if ref and ":" in ref and ref.rsplit(":", 1)[1].startswith("I"):
-            element.set("ref", ref.rsplit(":", 1)[0] + ":H" + "".join(c for c in ref.rsplit(":", 1)[1] if c.isdigit()))
-
-
 def sync(changed_rows: set[int] | None = None) -> bool:
     if lock_exists():
         print(f"Planilha aberta/bloqueada ({LOCK_FILE.name}); vou aguardar o fechamento antes de atualizar.")
@@ -242,45 +238,52 @@ def sync(changed_rows: set[int] | None = None) -> bool:
     if sheet_data is None:
         raise RuntimeError("A aba 'Lista de ICs' não contém sheetData.")
 
-    if changed_rows is None:
-        changed_rows = find_changed_rows(sheet_data, shared_strings)
+    header = find_row(sheet_data, 1)
+    wrong_headers = {
+        address: (cell_text(header, address, shared_strings), expected)
+        for address, expected in EXPECTED_HEADERS.items()
+        if cell_text(header, address, shared_strings) != expected
+    }
+    if wrong_headers:
+        raise RuntimeError(f"Cabeçalho da planilha não corresponde ao esperado: {wrong_headers}; nada foi alterado.")
 
-    has_hash_column = any(
-        cell.get("r", "").startswith("I")
-        for row in sheet_data.findall("m:row", NS)
-        for cell in row.findall("m:c", NS)
-    )
+    changed_rows = changed_rows or set()
     descriptions_match = all(
         cell_text(find_row(sheet_data, row_number), f"D{row_number}", shared_strings) == description
         for row_number, description in DESCRIPTION_UPDATES.items()
     )
     new_rows_match = all(
         all(cell_text(find_row(sheet_data, row_number), f"{column}{row_number}", shared_strings) == value
-            for column, value in zip("ABCDEFGH", values))
+            for column, value in zip(NEW_ROW_COLUMNS, values))
         for row_number, values in NEW_ROWS.items()
     )
     owner_updates = {
         row_number
         for row_number in changed_rows
-        if cell_text(find_row(sheet_data, row_number), f"G{row_number}", shared_strings) != "Gustavo Farias"
+        if cell_text(find_row(sheet_data, row_number), f"H{row_number}", shared_strings) != "Gustavo Farias"
     }
-    if not owner_updates and not has_hash_column and descriptions_match and new_rows_match:
+    notes_match = all(
+        cell_text(find_row(sheet_data, row_number), f"I{row_number}", shared_strings) == note
+        for row_number, note in NOTES_UPDATES.items()
+    )
+    if not owner_updates and descriptions_match and new_rows_match and notes_match:
         return True
 
     for row_number, values in NEW_ROWS.items():
-        for column, value in zip("ABCDEFGH", values):
+        for column, value in zip(NEW_ROW_COLUMNS, values):
             put_cell(sheet_data, row_number, column, value)
 
     for row_number, description in DESCRIPTION_UPDATES.items():
         put_cell(sheet_data, row_number, "D", description)
 
     for row_number in owner_updates:
-        put_cell(sheet_data, row_number, "G", "Gustavo Farias")
+        put_cell(sheet_data, row_number, "H", "Gustavo Farias")
 
-    remove_hash_column(sheet, sheet_data)
+    for row_number, note in NOTES_UPDATES.items():
+        put_cell(sheet_data, row_number, "I", note)
 
     updated_sheet = ET.tostring(sheet, encoding="utf-8", xml_declaration=True)
-    fd, temp_name = tempfile.mkstemp(prefix="lista_ics-", suffix=".xlsx", dir=WORKBOOK.parent)
+    fd, temp_name = tempfile.mkstemp(prefix="tabela_mudancas-", suffix=".xlsx", dir=WORKBOOK.parent)
     os.close(fd)
     temp_path = Path(temp_name)
     try:
@@ -299,7 +302,7 @@ def sync(changed_rows: set[int] | None = None) -> bool:
     if owner_updates:
         print(f"Lista de ICs atualizada; Gustavo Farias atribuído aos ICs: {', '.join(map(str, sorted(owner_updates)))}.")
     else:
-        print("Lista de ICs sincronizada; coluna SHA-256 removida.")
+        print("Lista de ICs sincronizada.")
     return True
 
 
