@@ -1,0 +1,35 @@
+name: Atualizar CSV Local de Commits
+
+on:
+  push:
+    branches: [ main ]
+    paths-ignore:
+      - 'COMMITS.csv'
+
+permissions:
+  contents: write
+
+jobs:
+  atualizar-csv:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Baixar repositório
+        uses: actions/checkout@v4
+
+      - name: Adicionar commit ao COMMITS.csv
+        run: |
+          DATA=$(date -u +"%Y-%m-%d %H:%M:%S")
+          AUTOR="${{ github.event.head_commit.author.name }}"
+          MENSAGEM=$(echo "${{ github.event.head_commit.message }}" | tr '\n' ' ' | sed 's/"/""/g')
+          HASH="${{ github.sha }}"
+          URL="${{ github.event.head_commit.url }}"
+          
+          echo "\"$DATA\",\"$AUTOR\",\"$MENSAGEM\",\"$HASH\"" >> COMMITS.csv
+
+      - name: Salvar no repositório
+        run: |
+          git config --local user.email "github-actions[bot]@://github.com"
+          git config --local user.name "github-actions[bot]"
+          git add COMMITS.csv
+          git commit -m "docs: atualiza tabela de commits"
+          git push
