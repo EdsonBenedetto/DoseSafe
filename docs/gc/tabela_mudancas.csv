@@ -11,7 +11,7 @@ Data,Autor,Mensagem,Hash,Link
 2026-11-24 21:37:30 -0400,Luarbtw,atualização dos de triagem-hospitalar,8b0f19e73a47f1c03668b154191da30998437d4e,
 2026-11-24 21:30:38 -0400,Luarbtw,atualização da tabela_mudanças,ac12fafba7b11d77251e390ccc79c836b7954bc3,
 2026-11-24 21:06:53 -0400,Luarbtw,atualização da lista de mudanças,d931ec89f936a8a54e4c0c01c3bd531f58c7edff,
-2026-11-24 21:03:15 -0400,Luarbtw,"orrigi o caminho da triagem; o atalho da página inicial agora aponta para triagem-hospitalar.html. Triagens e prescrições agora são salvas no armazenamento local do navegador. As telas exibem erro se não conseguirem gravar. Os dados do profissional nos cabeçalhos e registros usam a sessão autenticada, em vez de nomes fixos. Atualizei o README e os avisos das telas para deixar claro que não há banco de dados, prontuário eletrônico nem envio automático entre módulos. Os fluxos continuam independentes. Os botões “Voltar ao Painel” agora navegam para a página inicial.",69d1d6d7ebaae2d55bbcacaf56fe6a715c45e40e,
+2026-11-24 21:03:15 -0400,Luarbtw,"corrigi o caminho da triagem; o atalho da página inicial agora aponta para triagem-hospitalar.html.",69d1d6d7ebaae2d55bbcacaf56fe6a715c45e40e,
 2026-11-22 16:37:10 -0300,Edson Brahyn,Atualizando plano_projeto e doc_requisitos,77e097785602896c68d4d228ace0d77c21bad693,
 2026-11-21 17:44:01 -0400,Luarbtw,.,fed9bac06a9462c29aedf85f8f6d33dce0dbe65c,
 2026-11-21 17:42:17 -0400,Luarbtw,correção da tabela,1b49be2512aa6d2482cbd5cd197aa39a4f0434ff,
