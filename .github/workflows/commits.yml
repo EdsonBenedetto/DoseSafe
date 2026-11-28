@@ -24,7 +24,8 @@ jobs:
           HASH="${{ github.sha }}"
           URL="${{ github.event.head_commit.url }}"
           
-          echo "\"$DATA\",\"$AUTOR\",\"$MENSAGEM\",\"$HASH\"" >> docs/gc/tabela_mudancas.csv
+          echo "\"$DATA\",\"$AUTOR\",\"$MENSAGEM\",\"$HASH\",\"$URL\",\"\",\"\",\"\"" >> docs/gc/tabela_mudancas.csv
+
 
       - name: Salvar no repositório
         run: |
