@@ -2,7 +2,7 @@ name: Atualizar Tabela de Mudancas
 
 on:
   push:
-    branches: [ main ] # Altere para 'master' se sua branch principal tiver esse nome
+    branches: [ main ]
     paths-ignore:
       - 'docs/gc/tabela_mudancas.csv'
 
@@ -18,14 +18,14 @@ jobs:
 
       - name: Adicionar commit ao CSV
         run: |
-          DATA=$(date -u +"%Y-%m-%d %H:%M:%S")
+          DATA=$(TZ="America/Manaus" date +"%Y-%m-%d %H:%M:%S %z")
           AUTOR="${{ github.event.head_commit.author.name }}"
           MENSAGEM=$(echo "${{ github.event.head_commit.message }}" | tr '\n' ' ' | sed 's/"/""/g')
           HASH="${{ github.sha }}"
           URL="${{ github.event.head_commit.url }}"
-          
-          echo "\"$DATA\",\"$AUTOR\",\"$MENSAGEM\",\"$HASH\",\"$URL\",\"\",\"\",\"\"" >> docs/gc/tabela_mudancas.csv
 
+          [ -n "$(tail -c1 docs/gc/tabela_mudancas.csv)" ] && echo "" >> docs/gc/tabela_mudancas.csv
+          echo "\"$DATA\",\"$AUTOR\",\"$MENSAGEM\",\"$HASH\",\"$URL\"" >> docs/gc/tabela_mudancas.csv
 
       - name: Salvar no repositório
         run: |
