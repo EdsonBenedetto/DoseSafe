@@ -1,0 +1,36 @@
+name: Atualizar Tabela de Mudancas
+
+on:
+  push:
+    branches: [ main ] # Altere para 'master' se sua branch principal tiver esse nome
+    paths-ignore:
+      - 'docs/gc/tabela_mudancas.csv'
+
+permissions:
+  contents: write
+
+jobs:
+  atualizar-csv:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Baixar repositório
+        uses: actions/checkout@v4
+
+      - name: Adicionar commit ao CSV
+        run: |
+          DATA=$(date -u +"%Y-%m-%d %H:%M:%S")
+          AUTOR="${{ github.event.head_commit.author.name }}"
+          MENSAGEM=$(echo "${{ github.event.head_commit.message }}" | tr '\n' ' ' | sed 's/"/""/g')
+          HASH="${{ github.sha }}"
+          URL="${{ github.event.head_commit.url }}"
+          
+          echo "\"$DATA\",\"$AUTOR\",\"$MENSAGEM\",\"$HASH\",\"$URL\",\"\",\"\",\"\"" >> docs/gc/tabela_mudancas.csv
+
+
+      - name: Salvar no repositório
+        run: |
+          git config --local user.email "github-actions[bot]@://github.com"
+          git config --local user.name "github-actions[bot]"
+          git add docs/gc/tabela_mudancas.csv
+          git commit -m "docs: atualiza tabela de mudancas"
+          git push
